@@ -34,6 +34,6 @@ public class SessionObj {
     @Override
     public String toString() {
         return "Session_ID: " + this.session_id +
-                "Current time: " + this.timestamp;
+                " Current time: " + this.timestamp;
     }
 }

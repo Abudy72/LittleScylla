@@ -1,5 +1,6 @@
 package SmiteMatchsController.MatchObjectStates;
 
+import Exceptions.MatchSavedException;
 import SmiteMatchsController.MatchObject;
 
 public class MatchAvailableState implements MatchState{
@@ -10,7 +11,9 @@ public class MatchAvailableState implements MatchState{
     }
 
     @Override
-    public void saveMatchToDB() {
+    public void saveMatchToDB(long guild_id,long matchId, long savedBy, String division) throws MatchSavedException {
         //Code to save match details;
+        SaveMatchDetailsFacade facade = new SaveMatchDetailsFacade(division);
+        facade.saveMatchToDB(guild_id,matchId,savedBy);
     }
 }

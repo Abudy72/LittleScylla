@@ -1,6 +1,6 @@
 package Exceptions;
 
-public class MatchSavedException extends RuntimeException{
+public class MatchSavedException extends Exception{
     public MatchSavedException(String message) {
         super(message);
     }

@@ -2,11 +2,14 @@ package SmiteMatchsController;
 
 import APIController.APIController;
 import APIController.IController;
+import Exceptions.MatchSavedException;
 import Exceptions.MatchUnavailableException;
 import Exceptions.SmiteAPIUnavailableException;
 import SmiteMatchsController.MatchObjectStates.MatchAvailableState;
 import SmiteMatchsController.MatchObjectStates.MatchState;
 import SmiteMatchsController.MatchObjectStates.MatchUnavailableState;
+import SmiteMatchsController.PlayerDataModule.LeaguePlayerData;
+import SmiteMatchsController.PlayerDataModule.MatchData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.http.HttpResponse;
@@ -16,19 +19,26 @@ import java.io.IOException;
 import java.util.List;
 
 public class MatchObject {
-    private final int matchId;
-    private final List<PlayerData> playerDataList;
+    private final long matchId;
+    private final List<LeaguePlayerData> playerDataList;
     private MatchState state;
-    private static final TypeToken<List<PlayerData>> token = new TypeToken<List<PlayerData>>(){};
-    public MatchObject(int matchId) {
+    private List<MatchData> matchData;
+    private static final TypeToken<List<LeaguePlayerData>> token = new TypeToken<List<LeaguePlayerData>>(){};
+    private static final TypeToken<List<MatchData> > matchToken = new TypeToken<List<MatchData>>(){};
+
+    public MatchObject(long matchId) {
         this.matchId = matchId;
         playerDataList = parsePlayerData(loadMatchDetails());
         analyzeState();
     }
 
-    private static List<PlayerData> parsePlayerData(String apiResponse){
+    private static List<LeaguePlayerData> parsePlayerData(String apiResponse){
         Gson gson = new Gson();
         return gson.fromJson(apiResponse,token);
+    }
+    private static  List<MatchData> parseMatchData(String apiResponse){
+        Gson gson = new Gson();
+        return gson.fromJson(apiResponse,matchToken);
     }
 
     private String loadMatchDetails(){
@@ -43,6 +53,7 @@ public class MatchObject {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }
+            matchData = parseMatchData(apiResponse); // PARSING MATCH DATA WITH SAME REQUEST
             return apiResponse;
         }else{
             throw new SmiteAPIUnavailableException("Hirez responded with " + response.getStatusLine().getStatusCode() + " status code, Service is unavailable.");
@@ -52,14 +63,30 @@ public class MatchObject {
         if(playerDataList.size() > 1){
             this.state = new MatchAvailableState(this);
         }else if(playerDataList.size() == 1) {
-            String publicDate = playerDataList.get(0).getPublicDate().split("after")[1];
-            this.state = new MatchUnavailableState(publicDate);
+            String publicDate = matchData.get(0).getPublicDate().split("after")[1];
+            this.state = new MatchUnavailableState(this);
         }else{
             throw new MatchUnavailableException("Match is no longer available.");
         }
     }
 
-    public void saveMatchToDB(){
-        this.state.saveMatchToDB();
+    public void saveMatchToDB(long guild_id,long matchId, long savedBy, String division) throws MatchSavedException {
+        this.state.saveMatchToDB(guild_id,matchId,savedBy,division);
+    }
+
+    public long getMatchId() {
+        return matchId;
+    }
+
+    public List<LeaguePlayerData> getPlayerDataList() {
+        return playerDataList;
+    }
+
+    public MatchState getState() {
+        return state;
+    }
+
+    public MatchData getMatchData() {
+        return matchData.get(0);
     }
 }

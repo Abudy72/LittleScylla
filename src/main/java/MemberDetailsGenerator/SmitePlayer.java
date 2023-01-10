@@ -43,7 +43,7 @@ public class SmitePlayer {
         Gson gson = new Gson();
         return gson.fromJson(apiResponse,token);
     }
-    public static SmitePlayer getPlayerDetails(String playerName, String portalID) {
+    public static SmitePlayer getPlayerDetails(String playerName, String portalID) throws PlayerNotFoundException {
         MemberDetailsAPIController p = new MemberDetailsAPIController(playerName, portalID);
         IController controller = new APIController();
         HttpResponse response = controller.sendRequest(p);

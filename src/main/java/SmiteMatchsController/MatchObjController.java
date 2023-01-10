@@ -4,9 +4,9 @@ import APIController.EndPointBuilder;
 import SessionManager.*;
 
 public class MatchObjController extends EndPointBuilder {
-    private final int matchId;
+    private final long matchId;
 
-    public MatchObjController(int matchId) {
+    protected MatchObjController(long matchId) {
         this.matchId = matchId;
         buildEndPoint();
     }
@@ -21,6 +21,7 @@ public class MatchObjController extends EndPointBuilder {
         String buildPath =
                 String.format("%s/%sjson/%s/%s/%s/%s/%s",SessionManager.SMITE_API,method,
                         SessionManager.DEV_KEY,signature,obj.getSession_id(),timestamp, matchId);
+        System.out.println(buildPath);
         this.setEndPoint(buildPath);
     }
 }

@@ -6,5 +6,5 @@ CREATE TABLE verified_player(
     date_verified date NOT NULL default current_date,
     highest_mmr integer,
     total_hours integer,
-    verified_by bigint NOT NULL default 0
+    verified_by varchar(20) NOT NULL default 'System'
 );
