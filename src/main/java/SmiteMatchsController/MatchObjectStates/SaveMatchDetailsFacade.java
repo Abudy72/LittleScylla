@@ -61,6 +61,5 @@ public class SaveMatchDetailsFacade {
 
     protected SaveMatchDetailsFacade(String division){
         this.division = division;
-        // TODO ADD DIVISION DAO CHECK
     }
 }

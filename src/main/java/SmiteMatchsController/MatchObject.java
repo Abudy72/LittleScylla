@@ -2,6 +2,10 @@ package SmiteMatchsController;
 
 import APIController.APIController;
 import APIController.IController;
+import Dao.DivisionDao;
+import Dao.MainDao;
+import Dao.Model.Division;
+import Exceptions.DivisionOwnershipException;
 import Exceptions.MatchSavedException;
 import Exceptions.MatchUnavailableException;
 import Exceptions.SmiteAPIUnavailableException;
@@ -17,6 +21,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class MatchObject {
     private final long matchId;
@@ -70,8 +76,13 @@ public class MatchObject {
         }
     }
 
-    public void saveMatchToDB(long guild_id,long matchId, long savedBy, String division) throws MatchSavedException {
-        this.state.saveMatchToDB(guild_id,matchId,savedBy,division);
+    public void saveMatchToDB(long guild_id,long matchId, long savedBy, String division) throws MatchSavedException, DivisionOwnershipException {
+        MainDao<Division> dao = new DivisionDao();
+        String finalDivision = division;
+        Stream<Division> divisionVerification = dao.getAll().stream().filter(d -> d.getDivisionName().equals(finalDivision) && guild_id == d.getGuild_id());
+        if(divisionVerification.findAny().isPresent()){
+            this.state.saveMatchToDB(guild_id,matchId,savedBy,division);
+        }else throw new DivisionOwnershipException("This server does not have a division with the name: " + finalDivision);
     }
 
     public long getMatchId() {

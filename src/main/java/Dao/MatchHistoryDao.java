@@ -65,7 +65,7 @@ public class MatchHistoryDao implements MainDao<MatchHistoryLog>, Dao<MatchHisto
             Connection connection = ConnectionManager.getConnection();
             ResultSet resultSet = connection.prepareStatement(statement).executeQuery();
             while(resultSet.next()){
-                MatchHistoryLog server = new MatchHistoryLog(
+                MatchHistoryLog log = new MatchHistoryLog(
                         resultSet.getLong("matchid"),
                         resultSet.getLong("saved_by"),
                         resultSet.getDate("date_saved"),
@@ -73,7 +73,7 @@ public class MatchHistoryDao implements MainDao<MatchHistoryLog>, Dao<MatchHisto
                         resultSet.getString("division"),
                         resultSet.getBoolean("status")
                 );
-                resultList.add(server);
+                resultList.add(log);
             }
         }catch (SQLException e){
             throw new RuntimeException(e);
