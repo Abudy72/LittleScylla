@@ -15,8 +15,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class SessionManager extends EndPointBuilder {
-    public final static String DEV_KEY = "4359";
-    private final static String AUTH_KEY = "569FBB2CBA1A4E64B90EFA4B3E202B87";
+    public final static String DEV_KEY = System.getenv("DEV_KEY");
+    private final static String AUTH_KEY = System.getenv("AUTH_KEY");
     public final static String SMITE_API = "https://api.smitegame.com/smiteapi.svc";
     private static SessionManager instance;
     private SessionObj currentSession;
