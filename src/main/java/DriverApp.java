@@ -1,15 +1,7 @@
-import ConnectionPooling.Flyway.FlywayMigration;
-import Exceptions.DivisionOwnershipException;
-import Exceptions.MatchSavedException;
-import SmiteMatchsController.MatchObject;
+import Logic.ConnectionPooling.Flyway.FlywayMigration;
 
 public class DriverApp {
-    public static void main(String[] args) throws MatchSavedException, DivisionOwnershipException {
+    public static void main(String[] args){
         FlywayMigration.migrate();
-        MatchObject matchObject = new MatchObject(1283859302);
-
-        matchObject.saveMatchToDB(69987227858160854L,1283859302,699872278581608548L,"Challenger1");
-
-        // TODO CHECKPOINT DIVISION DAO
     }
 }

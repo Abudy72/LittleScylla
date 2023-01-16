@@ -1,4 +1,5 @@
-CREATE TABLE League(
+CREATE SCHEMA IF NOT EXISTS LittleMonster;
+CREATE TABLE IF NOT EXISTS League(
     guild_id bigint NOT NULL PRIMARY KEY,
     guild_name varchar(255) not null UNIQUE,
     bronze_uid bigint not null,

@@ -1,4 +1,4 @@
-CREATE TABLE league_team(
+CREATE TABLE IF NOT EXISTS league_team(
     team_name varchar(70) not null,
     captain bigint not null,
     team_member1 bigint,

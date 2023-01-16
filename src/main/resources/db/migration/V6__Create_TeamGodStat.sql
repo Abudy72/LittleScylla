@@ -1,4 +1,4 @@
-CREATE TABLE team_god_stat
+CREATE TABLE IF NOT EXISTS team_god_stat
 (
     god_name      varchar(150) not null,
     team_name     varchar(70)  not null,

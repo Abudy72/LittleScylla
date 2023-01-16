@@ -1,4 +1,4 @@
-CREATE TABLE league_player_stats(
+CREATE TABLE IF NOT EXISTS league_player_stats(
         ign varchar(70) not null,
         guild_id bigint NOT NULL,
         damage_taken int NOT NULL default 0,
