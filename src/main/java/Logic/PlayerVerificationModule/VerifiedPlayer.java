@@ -54,17 +54,6 @@ public class VerifiedPlayer{
                return p.getPc_IGN();
            }
        }
-
-
-        /*if(p.getPc_IGN().isEmpty() && p.getConsole_IGN().isEmpty()){
-            throw new PlayerNotFoundException("Hidden Profile, unable to verify your account");
-        }else{
-            if(p.getPc_IGN().isEmpty()){
-                return p.getConsole_IGN();
-            }else{
-                return p.getPc_IGN();
-            }
-        }*/
     }
 
     private void setHighestMMR(SmitePlayer smitePlayer){

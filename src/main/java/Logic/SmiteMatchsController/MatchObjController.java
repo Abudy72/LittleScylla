@@ -3,7 +3,6 @@ package Logic.SmiteMatchsController;
 import Logic.APIController.EndPointBuilder;
 import Logic.SessionManager.SessionManager;
 import Logic.SessionManager.SessionObj;
-import SessionManager.*;
 
 public class MatchObjController extends EndPointBuilder {
     private final long matchId;

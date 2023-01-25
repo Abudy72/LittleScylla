@@ -8,7 +8,6 @@ import Logic.Exceptions.DivisionOwnershipException;
 import Logic.Exceptions.ExceptionResponseHandler;
 import Logic.Exceptions.MaxTeamSizeException;
 import Logic.Exceptions.TeamNotFoundException;
-import LeagueTeamUtil.UpdateTeamStates.*;
 import Logic.LeagueTeamUtil.UpdateTeamStates.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
