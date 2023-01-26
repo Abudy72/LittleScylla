@@ -5,6 +5,7 @@ import Interface.CommandsModule.AcceptCommandStrategies.NewUser;
 import Interface.CommandsModule.AcceptCommandStrategies.VerificationStrategies;
 import Logic.Dao.Dao;
 import Logic.Dao.LeagueIDsDao;
+import Logic.Dao.Model.LeagueIDs;
 import Logic.Dao.VerifiedPlayerDao;
 import Logic.Exceptions.ExceptionResponseHandler;
 import Logic.Exceptions.PlayerNotFoundException;
@@ -40,18 +41,20 @@ public class AcceptCommand extends CustomCommandListener {
             Optional<VerifiedPlayer> existingPlayer = dao.get(memberId);
             try{
                 VerifiedPlayer newPlayerData = new VerifiedPlayer(memberId,ign,platform);
-                VerificationStrategies strategies = new NewUser(newPlayerData,event.getIdLong());
+                VerificationStrategies strategies = new NewUser(newPlayerData,event.getGuild().getIdLong());
                 if(existingPlayer.isPresent()){
                     if(!ign.equals(existingPlayer.get().getIgn())){
                         // TODO SEND MESSAGE TO COMPLETED VERIFICATION CHANNEL
-                        notifyServerOfSmurf(memberId,ign,newPlayerData,event.getGuild());
-                        strategies = new ExistingUser(event.getIdLong(),newPlayerData);
+                        smurfAlert(memberId,existingPlayer.get(),event.getGuild(), newPlayerData);
                     }
+                    strategies = new ExistingUser(event.getGuild().getIdLong(),newPlayerData);
                 }
-
                 strategies.verifyPlayer();
+                sendPlayerDataToVerificationChannel(event.getGuild(),newPlayerData);
+                event.getHook().sendMessageEmbeds(prettyMessage(event.getGuild(),ign)).queue();
             }catch (PlayerNotFoundException | RuntimeException e){
-                event.replyEmbeds(ExceptionResponseHandler.handle(event.getGuild(),e).build()).queue();
+                e.printStackTrace();
+                event.getHook().sendMessageEmbeds(ExceptionResponseHandler.handle(event.getGuild(),e).build()).queue();
             }
         }
     }
@@ -71,17 +74,17 @@ public class AcceptCommand extends CustomCommandListener {
 
         builder.setColor(Color.GREEN);
         builder.setFooter(guild.getName(),guild.getIconUrl());
-        builder.setTitle("Welcome: " + ign + ". Please choose a platform!");
+        builder.setTitle("Welcome: " + ign + ", have fun in " + guild.getName());
 
         return builder.build();
     }
-    private void notifyServerOfSmurf(long discordId,String ign, VerifiedPlayer player, Guild guild){
+    private void smurfAlert(long discordId,VerifiedPlayer v1, Guild guild, VerifiedPlayer v2){
         EmbedBuilder builder = new EmbedBuilder();
-        builder.setTitle(ign + " Might be a smurf.");
-        builder.setDescription("<@" + discordId + "> have verified with " + player.getIgn() +
-                " in another server and is trying to verify with " + ign + " in " + guild.getName());
-        Field field1 = new Field(ign + " stats:","VALUE",false);
-        Field field2 = new Field(player.getIgn()+ " stats:","VALUE",false);
+        builder.setTitle("\uD83D\uDEA8 SMURF ALERT \uD83D\uDEA8");
+        builder.setDescription("<@" + discordId + "> have verified with (`ign:" + v1.getIgn() +
+                "` in another server and is trying to verify with `(ign:" + v2.getIgn() + ")`");
+        Field field1 = new Field(v1.getIgn() + " Info:",v1.toString(),true);
+        Field field2 = new Field(v2.getIgn() + " Info:", v2.getSmiteAccount().toString(), true);
 
         builder.setColor(Color.RED);
         builder.addField(field1);
@@ -89,21 +92,36 @@ public class AcceptCommand extends CustomCommandListener {
 
         LeagueIDsDao dao = new LeagueIDsDao();
         dao.get(guild.getIdLong()).ifPresent(leagueInfo -> {
-            long verificationChannel = leagueInfo.getVerificationChannel_uid();
-            TextChannel channel = guild.getTextChannelById(verificationChannel);
-            if(channel != null){
-                channel.sendMessageEmbeds(builder.build()).queue();
-            }else{
-                System.out.println("Unable to send messages to verification channel, No channel is set.");
-            }
+            notifyVerificationChannel(guild, builder, leagueInfo);
         });
     }
 
-    private MessageEmbed printPlayerDataIntoMessage(SmitePlayer p){
+    private static void notifyVerificationChannel(Guild guild, EmbedBuilder builder, LeagueIDs leagueInfo) {
+        long verificationChannel = leagueInfo.getVerificationChannel_uid();
+        TextChannel channel = guild.getTextChannelById(verificationChannel);
+        if(channel != null){
+            channel.sendMessageEmbeds(builder.build()).queue();
+        }else{
+            System.out.println("Unable to send messages to verification channel, No channel is set.");
+        }
+    }
+
+    private void sendPlayerDataToVerificationChannel(Guild guild,VerifiedPlayer player){
+        SmitePlayer p =player.getSmiteAccount();
         EmbedBuilder builder = new EmbedBuilder();
+        LeagueIDsDao dao = new LeagueIDsDao();
         builder.setColor(Color.GREEN);
-        String statement = "Conquest: " + p.getRankedConquest().getHi_rezMMR() + "\nJoust: "
-                + p.getRankedJoust().getHi_rezMMR() + "\nDuel: " + p.getRankedDuel().getHi_rezMMR();
-        Field pcRankedDetails = new Field("PC Ranked Details",statement,true);
+        Field pcRankedDetails = new Field("PC Ranked Details",p.pcRankedDetailsPrettyPrint(),true);
+        Field consoleRankedDetails = new Field("Controller Ranked Details",p.consoleRankedDetailsPrettyPrint(),true);
+        builder.addField(pcRankedDetails);
+        builder.addField(consoleRankedDetails);
+        builder.setDescription(player.toString());
+        builder.setTitle("In-game name: " + player.getIgn());
+
+        builder.setFooter(guild.getName(),guild.getIconUrl());
+
+        dao.get(guild.getIdLong()).ifPresent(leagueInfo -> {
+            notifyVerificationChannel(guild, builder, leagueInfo);
+        });
     }
 }

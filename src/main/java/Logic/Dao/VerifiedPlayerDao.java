@@ -40,9 +40,7 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
                 return Optional.of(obj);
             }
         }catch (SQLException e){
-            e.getMessage();
-            e.printStackTrace();
-            throw new RuntimeException();
+            System.out.println(e.getMessage());
         }
         return Optional.empty();
     }

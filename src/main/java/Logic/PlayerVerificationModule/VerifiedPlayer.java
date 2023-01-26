@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class VerifiedPlayer{
     private long discordId;
-    SmitePlayer p;
+    SmitePlayer smiteAccount;
     private String ign;
     private Platform platform;
     private String accountDate;
@@ -31,34 +31,34 @@ public class VerifiedPlayer{
     }
     public VerifiedPlayer(long discordId, String playerName, String platform) throws PlayerNotFoundException {
         this.discordId = discordId;
-        p = SmitePlayer.generatePlayerDetails(playerName,Platform.getPortalID(platform));
+        smiteAccount = SmitePlayer.generatePlayerDetails(playerName,Platform.getPortalID(platform));
         this.platform = resolvePlatformType(platform);
-        this.currentRank = this.platform.getRank(verificationMMR);
         this.ign = resolvePlayerName();
-        this.accountDate = p.getAccountDate();
-        setHighestMMR(p);
+        this.accountDate = smiteAccount.getAccountDate();
+        this.hours = smiteAccount.getHoursPlayed();
+        setHighestMMR(smiteAccount);
+        this.currentRank = this.platform.getRank(verificationMMR);
     }
     private String resolvePlayerName() throws PlayerNotFoundException {
-       if(p.getPc_IGN() == null){
+       if(smiteAccount.getPc_IGN() == null){
            //Check Xbox
-           if(p.getConsole_IGN().isEmpty()){
+           if(smiteAccount.getConsole_IGN().isEmpty()){
                throw new PlayerNotFoundException("Hidden Profile, unable to verify your account");
            }else{
-               return p.getConsole_IGN();
+               return smiteAccount.getConsole_IGN();
            }
        }else {
            //Check PC
-           if(p.getPc_IGN().isEmpty()){
+           if(smiteAccount.getPc_IGN().isEmpty()){
                throw new PlayerNotFoundException("Hidden Profile, unable to verify your account");
            }else{
-               return p.getPc_IGN();
+               return smiteAccount.getPc_IGN();
            }
        }
     }
 
     private void setHighestMMR(SmitePlayer smitePlayer){
-        System.out.println();
-        smitePlayer.getRankedDetails().sort((t1,t2) -> (int) (t1.getHi_rezMMR() - t2.getHi_rezMMR()));
+        smitePlayer.getRankedDetails().sort((t2,t1) -> (int) (t1.getHi_rezMMR() - t2.getHi_rezMMR()));
         this.verificationMMR = (int) smitePlayer.getRankedDetails().get(0).getHi_rezMMR();
     }
 
@@ -91,7 +91,6 @@ public class VerifiedPlayer{
     }
 
     public String getAccountDateSQL() {
-        System.out.println(accountDate);
         return accountDate;
     }
 
@@ -113,5 +112,19 @@ public class VerifiedPlayer{
 
     public Platform.Rank getCurrentRank() {
         return currentRank;
+    }
+
+    public SmitePlayer getSmiteAccount() {
+        return smiteAccount;
+    }
+
+    @Override
+    public String toString() {
+        return "<@" + this.discordId + ">'s account info:\nAccountDate: `" + this.getAccountDateSQL()
+                + "`\nPlatform: " + this.getPlatform()
+                + "\n`VerifiedBy: <@" + this.verifiedBy + ">`"
+                + "\nMMR Verification: " + this.verificationMMR
+                + "\nHours Played: " + this.hours
+                + "\nLeague Assistant Rank: " + this.getCurrentRank().toString();
     }
 }

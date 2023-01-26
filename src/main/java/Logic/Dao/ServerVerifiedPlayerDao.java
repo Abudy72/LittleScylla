@@ -34,7 +34,7 @@ public class ServerVerifiedPlayerDao implements Dao<ServerVerifiedPlayer> {
                 );
             }
         }catch (SQLException e){
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
         return Optional.empty();
     }
@@ -51,6 +51,15 @@ public class ServerVerifiedPlayerDao implements Dao<ServerVerifiedPlayer> {
 
     @Override
     public boolean save(ServerVerifiedPlayer serverVerifiedPlayer) {
-        return false;
+        String statement = "INSERT INTO server_verification (discord_id,verified_in) VALUES (?,?)";
+        try{
+            Connection connection = ConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(statement);
+            preparedStatement.setLong(1,serverVerifiedPlayer.getDiscordId());
+            preparedStatement.setLong(2,serverVerifiedPlayer.getVerifiedInGuild());
+            return preparedStatement.executeUpdate() == 1;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 }

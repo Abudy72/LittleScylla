@@ -215,4 +215,27 @@ public class SmitePlayer {
         return result;
 
     }
+
+    public String pcRankedDetailsPrettyPrint(){
+        return "Conq.: " + this.getRankedConquest().getHi_rezMMR() + ": " + this.getRankedConquest().getActualRank()
+                + "\nJoust: " + this.getRankedJoust().getHi_rezMMR() + ": " +this.getRankedJoust().getActualRank()
+                + "\nDuel: " + this.getRankedDuel().getHi_rezMMR() + ": " +this.getRankedDuel().getActualRank();
+    }
+    public String consoleRankedDetailsPrettyPrint(){
+        return "Conq.: " + this.getRankedConquestController().getHi_rezMMR() + ": " + this.getRankedConquestController().getActualRank()
+                + "\nJoust: " + this.getRankedJoustController().getHi_rezMMR() + ": " + this.getRankedJoustController().getActualRank()
+                + "\nDuel: " + this.getRankedDuelController().getHi_rezMMR() + ": " + this.getRankedDuelController().getActualRank();
+    }
+
+    @Override
+    public String toString() {
+        return "\nAccountDate: `" + this.accountDate
+                + "`\nHours Played: " + this.hoursPlayed
+                + "\nConq MMR: " + this.rankedConquest.getHi_rezMMR()
+                + "\nDuel MMR: " + this.rankedDuel.getHi_rezMMR()
+                + "\nJoust MMR: " + this.rankedJoust.getHi_rezMMR()
+                + "\nConq (Controller) MMR: " + this.rankedConquestController.getHi_rezMMR()
+                + "\nDuel (Controller) MMR: " + this.rankedDuelController.getHi_rezMMR()
+                + "\nJoust (Controller) MMR: " + this.rankedJoustController.getHi_rezMMR();
+    }
 }

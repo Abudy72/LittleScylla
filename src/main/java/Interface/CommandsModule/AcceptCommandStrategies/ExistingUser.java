@@ -26,8 +26,8 @@ public class ExistingUser implements VerificationStrategies{
                 if(player.getVerificationMMR() > verifiedPlayer.getVerificationMMR()){
                     verifiedPlayerDao.update(player);
                 }
-                serverVerifiedPlayerDao.save(new ServerVerifiedPlayer(player.getDiscordId(),guild_id));
             }
+            serverVerifiedPlayerDao.save(new ServerVerifiedPlayer(player.getDiscordId(),guild_id));
         });
     }
 }

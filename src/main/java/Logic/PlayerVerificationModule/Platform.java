@@ -47,11 +47,11 @@ public abstract class Platform {
             return Rank.Diamond;
         }else if(MMR >= 1725){
             return Rank.Platinum;
-        }else if (MMR > 1350){
+        }else if (MMR >= 1350){
             return Rank.Gold;
-        }else if (MMR > 550){
+        }else if (MMR >= 550){
             return Rank.Silver;
-        }else if (MMR <= 0){
+        }else if (MMR >= 0){
             return Rank.Bronze;
         }
         return Rank.Unranked;

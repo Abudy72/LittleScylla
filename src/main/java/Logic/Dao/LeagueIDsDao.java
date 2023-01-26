@@ -13,7 +13,7 @@ import java.util.Optional;
 public class LeagueIDsDao implements Dao<LeagueIDs> {
     @Override
     public Optional<LeagueIDs> get(long id) {
-        String statement = "SELECT * FROM League where guild_id =";
+        String statement = "SELECT * FROM league where guild_id = ?";
         try{
             Connection connection = ConnectionManager.getConnection();
             PreparedStatement p = connection.prepareStatement(statement);
@@ -43,7 +43,8 @@ public class LeagueIDsDao implements Dao<LeagueIDs> {
                 return Optional.of(leagueIDs);
             }
         }catch (SQLException e){
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return Optional.empty();
     }
