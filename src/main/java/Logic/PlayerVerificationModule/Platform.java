@@ -26,7 +26,7 @@ public abstract class Platform {
         Xbox,
         PSN;
     }
-    protected enum Rank {
+    public enum Rank {
         Bronze,
         Silver,
         Gold,

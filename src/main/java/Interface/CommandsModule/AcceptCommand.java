@@ -23,7 +23,7 @@ import java.util.Optional;
 
 
 public class AcceptCommand extends CustomCommandListener {
-    private final static String IGN = "ign";
+    public final static String IGN = "ign";
     public final static String PC = "pc";
     public final static String PSN = "PSN";
     public final static String Xbox = "Xbox";
@@ -44,7 +44,6 @@ public class AcceptCommand extends CustomCommandListener {
                 VerificationStrategies strategies = new NewUser(newPlayerData,event.getGuild().getIdLong());
                 if(existingPlayer.isPresent()){
                     if(!ign.equals(existingPlayer.get().getIgn())){
-                        // TODO SEND MESSAGE TO COMPLETED VERIFICATION CHANNEL
                         smurfAlert(memberId,existingPlayer.get(),event.getGuild(), newPlayerData);
                     }
                     strategies = new ExistingUser(event.getGuild().getIdLong(),newPlayerData);

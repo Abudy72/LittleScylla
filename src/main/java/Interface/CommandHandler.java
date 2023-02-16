@@ -21,7 +21,6 @@ public class CommandHandler extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         switch (event.getName()) {
             case ACCEPT:
-                System.out.println(event.getName());
                 new AcceptCommand().handleCommand(event);
                 break;
         }
