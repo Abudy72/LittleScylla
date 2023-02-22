@@ -1,5 +1,7 @@
 package Interface.CommandsModule.AcceptCommandStrategies;
 
+import Logic.Exceptions.PlayerVerifiedException;
+
 public interface VerificationStrategies {
-    void verifyPlayer();
+    void verifyPlayer() throws PlayerVerifiedException;
 }

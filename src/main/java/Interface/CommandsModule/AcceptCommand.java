@@ -5,21 +5,22 @@ import Interface.CommandsModule.AcceptCommandStrategies.NewUser;
 import Interface.CommandsModule.AcceptCommandStrategies.VerificationStrategies;
 import Logic.Dao.Dao;
 import Logic.Dao.LeagueIDsDao;
-import Logic.Dao.Model.LeagueIDs;
 import Logic.Dao.VerifiedPlayerDao;
 import Logic.Exceptions.ExceptionResponseHandler;
 import Logic.Exceptions.PlayerNotFoundException;
-import Logic.PlayerVerificationModule.SmitePlayer;
+import Logic.Exceptions.PlayerVerifiedException;
 import Logic.PlayerVerificationModule.VerifiedPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.awt.*;
 import java.util.Optional;
+
+import static Interface.CommandsModule.VerificationUtil.notifyVerificationChannel;
+import static Interface.CommandsModule.VerificationUtil.sendPlayerDataToVerificationChannel;
 
 
 public class AcceptCommand extends CustomCommandListener {
@@ -49,11 +50,15 @@ public class AcceptCommand extends CustomCommandListener {
                     strategies = new ExistingUser(event.getGuild().getIdLong(),newPlayerData);
                 }
                 strategies.verifyPlayer();
-                sendPlayerDataToVerificationChannel(event.getGuild(),newPlayerData);
+                sendPlayerDataToVerificationChannel(event.getGuild(),newPlayerData,this,event.getMember());
                 event.getHook().sendMessageEmbeds(prettyMessage(event.getGuild(),ign)).queue();
-            }catch (PlayerNotFoundException | RuntimeException e){
+            }catch (PlayerNotFoundException | PlayerVerifiedException e){
                 e.printStackTrace();
                 event.getHook().sendMessageEmbeds(ExceptionResponseHandler.handle(event.getGuild(),e).build()).queue();
+            }catch (RuntimeException e){
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+                event.getHook().sendMessageEmbeds(ExceptionResponseHandler.handle(event.getGuild(),new RuntimeException("Unknown error occurred")).build()).queue();
             }
         }
     }
@@ -90,35 +95,6 @@ public class AcceptCommand extends CustomCommandListener {
         builder.addField(field2);
 
         LeagueIDsDao dao = new LeagueIDsDao();
-        dao.get(guild.getIdLong()).ifPresent(leagueInfo -> {
-            notifyVerificationChannel(guild, builder, leagueInfo);
-        });
-    }
-
-    private static void notifyVerificationChannel(Guild guild, EmbedBuilder builder, LeagueIDs leagueInfo) {
-        long verificationChannel = leagueInfo.getVerificationChannel_uid();
-        TextChannel channel = guild.getTextChannelById(verificationChannel);
-        if(channel != null){
-            channel.sendMessageEmbeds(builder.build()).queue();
-        }else{
-            System.out.println("Unable to send messages to verification channel, No channel is set.");
-        }
-    }
-
-    private void sendPlayerDataToVerificationChannel(Guild guild,VerifiedPlayer player){
-        SmitePlayer p =player.getSmiteAccount();
-        EmbedBuilder builder = new EmbedBuilder();
-        LeagueIDsDao dao = new LeagueIDsDao();
-        builder.setColor(Color.GREEN);
-        Field pcRankedDetails = new Field("PC Ranked Details",p.pcRankedDetailsPrettyPrint(),true);
-        Field consoleRankedDetails = new Field("Controller Ranked Details",p.consoleRankedDetailsPrettyPrint(),true);
-        builder.addField(pcRankedDetails);
-        builder.addField(consoleRankedDetails);
-        builder.setDescription(player.toString());
-        builder.setTitle("In-game name: " + player.getIgn());
-
-        builder.setFooter(guild.getName(),guild.getIconUrl());
-
         dao.get(guild.getIdLong()).ifPresent(leagueInfo -> {
             notifyVerificationChannel(guild, builder, leagueInfo);
         });

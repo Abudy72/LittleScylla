@@ -11,7 +11,7 @@ public class ExceptionResponseHandler {
         builder.setColor(Color.RED);
         builder.setDescription(e.getMessage());
         builder.setFooter(guild.getName());
-        builder.setImage(guild.getIconUrl());
+        builder.setFooter(guild.getName(),guild.getIconUrl());
         return builder;
     }
 }

@@ -4,7 +4,10 @@ import Logic.Dao.Dao;
 import Logic.Dao.Model.ServerVerifiedPlayer;
 import Logic.Dao.ServerVerifiedPlayerDao;
 import Logic.Dao.VerifiedPlayerDao;
+import Logic.Exceptions.PlayerVerifiedException;
 import Logic.PlayerVerificationModule.VerifiedPlayer;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ExistingUser implements VerificationStrategies{
 
@@ -17,9 +20,10 @@ public class ExistingUser implements VerificationStrategies{
     }
 
     @Override
-    public void verifyPlayer() {
+    public void verifyPlayer() throws PlayerVerifiedException {
         Dao<VerifiedPlayer> verifiedPlayerDao = new VerifiedPlayerDao(guild_id);
         Dao<ServerVerifiedPlayer> serverVerifiedPlayerDao = new ServerVerifiedPlayerDao(guild_id);
+        AtomicBoolean flag = new AtomicBoolean(false);
 
         verifiedPlayerDao.get(player.getDiscordId()).ifPresent(verifiedPlayer -> {
             if(verifiedPlayer.getIgn().equals(player.getIgn())){
@@ -27,7 +31,14 @@ public class ExistingUser implements VerificationStrategies{
                     verifiedPlayerDao.update(player);
                 }
             }
-            serverVerifiedPlayerDao.save(new ServerVerifiedPlayer(player.getDiscordId(),guild_id));
+            if(!serverVerifiedPlayerDao.get(player.getDiscordId()).isPresent()){
+                serverVerifiedPlayerDao.save(new ServerVerifiedPlayer(player.getDiscordId(),guild_id));
+            }else{
+                flag.set(true);
+            }
         });
+        if(flag.get()){
+            throw new PlayerVerifiedException("You are already verified!\nIf you need to update your rank or player name, please contact an admin.");
+        }
     }
 }

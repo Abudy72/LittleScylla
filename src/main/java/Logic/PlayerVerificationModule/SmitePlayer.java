@@ -59,7 +59,11 @@ public class SmitePlayer {
             try {
                 jsonResponse = EntityUtils.toString(response.getEntity());
                 List<SmitePlayer> resultSet = parseResponseIntoPlayerDetails(jsonResponse);
-                if(resultSet.isEmpty()) throw new PlayerNotFoundException("Unable to find player, either the IGN/Platform selected is wrong or profile is hidden.");
+                if(resultSet.isEmpty()){
+                    throw new PlayerNotFoundException("Unable to find player, either the IGN/Platform selected is wrong or profile is hidden.");
+                }else if(resultSet.get(0).getPlayerId() == 0){
+                    throw new PlayerNotFoundException("Unable to find player, either the IGN/Platform selected is wrong or profile is hidden.");
+                }
                return resultSet.get(0);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -71,24 +75,6 @@ public class SmitePlayer {
         }
     }
     protected SmitePlayer(){}
-    /*protected SmitePlayer(String pc_IGN, String console_IGN, int hoursPlayed, int playerId,
-                       String last_login, String region, String accountDate, MemberRankedDetails rankedConquest,
-                       MemberRankedDetails rankedConquestController, MemberRankedDetails rankedDuel,
-                       MemberRankedDetails rankedDuelController, MemberRankedDetails rankedJoust, MemberRankedDetails rankedJoustController) {
-        this.pc_IGN = pc_IGN;
-        this.accountDate = accountDate;
-        this.console_IGN = console_IGN;
-        this.hoursPlayed = hoursPlayed;
-        this.playerId = playerId;
-        this.last_login = last_login;
-        this.region = region;
-        this.rankedConquest = rankedConquest;
-        this.rankedConquestController = rankedConquestController;
-        this.rankedDuel = rankedDuel;
-        this.rankedDuelController = rankedDuelController;
-        this.rankedJoust = rankedJoust;
-        this.rankedJoustController = rankedJoustController;
-    }*/
 
     public String getPc_IGN() {
         return pc_IGN;

@@ -3,6 +3,8 @@ package Logic.PlayerVerificationModule;
 import Logic.Exceptions.PlayerNotFoundException;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 public class VerifiedPlayer{
@@ -39,6 +41,17 @@ public class VerifiedPlayer{
         setHighestMMR(smiteAccount);
         this.currentRank = this.platform.getRank(verificationMMR);
     }
+
+    public VerifiedPlayer(long discordId, String ign, Platform platform, Platform.Rank rank, String verifiedBy) {
+        this.discordId = discordId;
+        this.ign = ign;
+        this.platform = platform;
+        this.currentRank = rank;
+        this.accountDate = Timestamp.from(Instant.now()).toString();
+        verificationMMR = Platform.getMMR(rank);
+        this.verifiedBy = verifiedBy;
+    }
+
     private String resolvePlayerName() throws PlayerNotFoundException {
        if(smiteAccount.getPc_IGN() == null){
            //Check Xbox
@@ -73,6 +86,8 @@ public class VerifiedPlayer{
             return new PlatformPSN();
         }else if(patternXbox.matcher(userInput).find()) {
             return new PlatformXbox();
+        } else if (userInput.equals("No platform")) {
+            return new ManualVerifiedPlatform();
         }
         throw new IllegalStateException("Unknown Platform");
     }
@@ -125,6 +140,7 @@ public class VerifiedPlayer{
                 + "\n`VerifiedBy: <@" + this.verifiedBy + ">`"
                 + "\nMMR Verification: " + this.verificationMMR
                 + "\nHours Played: " + this.hours
-                + "\nLeague Assistant Rank: " + this.getCurrentRank().toString();
+                + "\nLeague Assistant Rank: " + this.getCurrentRank().toString()
+                + "\nIGN: " + this.ign;
     }
 }

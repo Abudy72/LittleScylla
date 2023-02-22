@@ -109,7 +109,7 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
         } catch (SQLException e) {
             e.getMessage();
             e.printStackTrace();
-            throw new UnableToSaveMatchException("Unable to save match id, please make sure the division name is entered correctly");
+            throw new RuntimeException("Database error");
         }
     }
 }

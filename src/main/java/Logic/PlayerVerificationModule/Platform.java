@@ -24,7 +24,8 @@ public abstract class Platform {
     protected enum SupportedPlatforms {
         PC,
         Xbox,
-        PSN;
+        PSN,
+        NoPlatform
     }
     public enum Rank {
         Bronze,
@@ -55,5 +56,23 @@ public abstract class Platform {
             return Rank.Bronze;
         }
         return Rank.Unranked;
+    }
+
+    public static int getMMR(Rank r){
+        if(r.equals(Rank.GrandMaster)){
+            return 2900;
+        }else if(r.equals(Rank.Masters)){
+            return 2525;
+        }else if(r.equals(Rank.Diamond)){
+            return 2000;
+        }else if(r.equals(Rank.Platinum)){
+            return 1725;
+        }else if (r.equals(Rank.Gold)){
+             return 1350;
+        }else if (r.equals(Rank.Silver)){
+            return 550;
+        }else {
+            return 0;
+        }
     }
 }
