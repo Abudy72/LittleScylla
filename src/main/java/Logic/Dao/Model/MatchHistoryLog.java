@@ -1,27 +1,20 @@
 package Logic.Dao.Model;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 public class MatchHistoryLog {
     private final long matchId;
     private final long savedBy;
     private Date dateSaved = null;
-    private Date publicDate = null;
+    private Timestamp publicDate = null;
     private final String division;
     private boolean saved;
 
-    public MatchHistoryLog(long matchId, long savedBy, Date dateSaved, Date publicDate, String division, boolean saved) {
+    public MatchHistoryLog(long matchId, long savedBy, Date dateSaved, Timestamp publicDate, String division, boolean saved) {
         this.matchId = matchId;
         this.savedBy = savedBy;
         this.dateSaved = dateSaved;
-        this.publicDate = publicDate;
-        this.division = division;
-        this.saved = saved;
-    }
-
-    public MatchHistoryLog(long matchId, long savedBy, Date publicDate, String division, boolean saved) {
-        this.matchId = matchId;
-        this.savedBy = savedBy;
         this.publicDate = publicDate;
         this.division = division;
         this.saved = saved;
@@ -46,7 +39,7 @@ public class MatchHistoryLog {
         return dateSaved;
     }
 
-    public Date getPublicDate() {
+    public Timestamp getPublicDate() {
         return publicDate;
     }
 
@@ -58,7 +51,7 @@ public class MatchHistoryLog {
         return saved;
     }
 
-    public void setPublicDate(Date publicDate) {
+    public void setPublicDate(Timestamp publicDate) {
         this.publicDate = publicDate;
     }
 

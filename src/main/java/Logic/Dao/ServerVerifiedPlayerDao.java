@@ -22,8 +22,8 @@ public class ServerVerifiedPlayerDao implements Dao<ServerVerifiedPlayer> {
     @Override
     public Optional<ServerVerifiedPlayer> get(long id) {
         String statement = "SELECT * FROM server_verification where verified_in = ? AND discord_id = ?";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(statement);
             preparedStatement.setLong(1,guildId);
             preparedStatement.setLong(2,id);
@@ -35,6 +35,8 @@ public class ServerVerifiedPlayerDao implements Dao<ServerVerifiedPlayer> {
             }
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return Optional.empty();
     }
@@ -52,14 +54,16 @@ public class ServerVerifiedPlayerDao implements Dao<ServerVerifiedPlayer> {
     @Override
     public boolean save(ServerVerifiedPlayer serverVerifiedPlayer) {
         String statement = "INSERT INTO server_verification (discord_id,verified_in) VALUES (?,?)";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(statement);
             preparedStatement.setLong(1,serverVerifiedPlayer.getDiscordId());
             preparedStatement.setLong(2,serverVerifiedPlayer.getVerifiedInGuild());
             return preparedStatement.executeUpdate() == 1;
         }catch (SQLException e){
             throw new RuntimeException(e);
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
     }
 }

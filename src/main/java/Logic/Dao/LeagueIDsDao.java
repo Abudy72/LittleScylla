@@ -14,8 +14,8 @@ public class LeagueIDsDao implements Dao<LeagueIDs> {
     @Override
     public Optional<LeagueIDs> get(long id) {
         String statement = "SELECT * FROM league where guild_id = ?";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement p = connection.prepareStatement(statement);
             p.setLong(1,id);
             ResultSet resultSet = p.executeQuery();
@@ -45,6 +45,8 @@ public class LeagueIDsDao implements Dao<LeagueIDs> {
         }catch (SQLException e){
             e.printStackTrace();
             System.out.println(e.getMessage());
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return Optional.empty();
     }

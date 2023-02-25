@@ -21,8 +21,8 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
     @Override
     public Optional<VerifiedPlayer> get(long id) {
         String statement = "SELECT * FROM verified_player where discord_id = ?";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(statement);
             preparedStatement.setLong(1,id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -41,6 +41,8 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
             }
         }catch (SQLException e){
             System.out.println(e.getMessage());
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return Optional.empty();
     }
@@ -48,8 +50,8 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
     @Override
     public boolean update(VerifiedPlayer verifiedPlayer) {
         String statement = "UPDATE verified_player set (ign,platform,highest_mmr,total_hours) = (?,?,?,?) where discord_id = ?";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(statement);
             preparedStatement.setString(1,verifiedPlayer.getIgn());
             preparedStatement.setString(2,verifiedPlayer.getPlatform().toString());
@@ -62,6 +64,8 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
             e.getMessage();
             e.printStackTrace();
             throw new RuntimeException();
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
     }
 
@@ -69,8 +73,8 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
     public List<VerifiedPlayer> getAll() {
         String statement = "SELECT * FROM verified_player";
         LinkedList<VerifiedPlayer> resultList = new LinkedList<>();
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             ResultSet resultSet = connection.prepareStatement(statement).executeQuery();
             while(resultSet.next()){
                 VerifiedPlayer verifiedPlayer = new VerifiedPlayer(
@@ -87,6 +91,8 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
             }
         }catch (SQLException e){
             throw new RuntimeException(e);
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return resultList;
     }
@@ -95,8 +101,8 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
     public boolean save(VerifiedPlayer verifiedPlayer) {
         String statement = "INSERT INTO verified_player (discord_id, ign, platform, account_date, highest_mmr, total_hours, verified_by)" +
                 "VALUES (?,?,?,?,?,?,?)";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(statement);
             preparedStatement.setLong(1,verifiedPlayer.getDiscordId());
             preparedStatement.setString(2,verifiedPlayer.getIgn());
@@ -110,6 +116,26 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
             e.getMessage();
             e.printStackTrace();
             throw new RuntimeException("Database error");
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
+    }
+
+    public long getDiscordIdByIGN(String ign){
+        String statement = "SELECT discord_id FROM verified_player where ign = ?";
+        Connection connection = ConnectionManager.getConnection();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(statement);
+            preparedStatement.setString(1,ign);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                return resultSet.getLong("discord_id");
+            }
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
+        }finally {
+            ConnectionManager.releaseConnection(connection);
+        }
+        return 0;
     }
 }

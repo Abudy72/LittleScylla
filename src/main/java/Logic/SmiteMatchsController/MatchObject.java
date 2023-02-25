@@ -9,11 +9,11 @@ import Logic.Exceptions.DivisionOwnershipException;
 import Logic.Exceptions.MatchSavedException;
 import Logic.Exceptions.MatchUnavailableException;
 import Logic.Exceptions.SmiteAPIUnavailableException;
-import Logic.SmiteMatchsController.PlayerDataModule.LeaguePlayerData;
-import Logic.SmiteMatchsController.PlayerDataModule.MatchData;
 import Logic.SmiteMatchsController.MatchObjectStates.MatchAvailableState;
 import Logic.SmiteMatchsController.MatchObjectStates.MatchState;
 import Logic.SmiteMatchsController.MatchObjectStates.MatchUnavailableState;
+import Logic.SmiteMatchsController.PlayerDataModule.MatchPlayerData;
+import Logic.SmiteMatchsController.PlayerDataModule.MatchPublicDateParser;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.http.HttpResponse;
@@ -25,25 +25,35 @@ import java.util.stream.Stream;
 
 public class MatchObject {
     private final long matchId;
-    private final List<LeaguePlayerData> playerDataList;
+    private final List<MatchPlayerData> playerDataList;
     private MatchState state;
-    private List<MatchData> matchData;
-    private static final TypeToken<List<LeaguePlayerData>> token = new TypeToken<List<LeaguePlayerData>>(){};
-    private static final TypeToken<List<MatchData> > matchToken = new TypeToken<List<MatchData>>(){};
+    private MatchPublicDateParser matchPublicDateParser;
+    private static final TypeToken<List<MatchPlayerData>> token = new TypeToken<List<MatchPlayerData>>(){};
+    private static final TypeToken<List<MatchPublicDateParser>> publicDateToken = new TypeToken<List<MatchPublicDateParser>>(){};
 
     public MatchObject(long matchId) {
         this.matchId = matchId;
-        playerDataList = parsePlayerData(loadMatchDetails());
+        String apiResponse = loadMatchDetails();
+        this.playerDataList = parsePlayerData(apiResponse);
+        this.matchPublicDateParser = matchPublicDateParser(apiResponse);
+        for(MatchPlayerData d: playerDataList){
+            d.resolvePlayerName();
+            d.resolveWinStatus();
+        }
         analyzeState();
     }
 
-    private static List<LeaguePlayerData> parsePlayerData(String apiResponse){
+    private static List<MatchPlayerData> parsePlayerData(String apiResponse){
         Gson gson = new Gson();
         return gson.fromJson(apiResponse,token);
     }
-    private static  List<MatchData> parseMatchData(String apiResponse){
+    private static MatchPublicDateParser matchPublicDateParser(String json){
         Gson gson = new Gson();
-        return gson.fromJson(apiResponse,matchToken);
+        if(gson.fromJson(json,publicDateToken).isEmpty()){
+            throw new MatchUnavailableException("Match seems to be unavailable for unknown reason.");
+        }else {
+            return gson.fromJson(json,publicDateToken).get(0);
+        }
     }
 
     private String loadMatchDetails(){
@@ -58,7 +68,6 @@ public class MatchObject {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
             }
-            matchData = parseMatchData(apiResponse); // PARSING MATCH DATA WITH SAME REQUEST
             return apiResponse;
         }else{
             throw new SmiteAPIUnavailableException("Hirez responded with " + response.getStatusLine().getStatusCode() + " status code, Service is unavailable.");
@@ -68,14 +77,13 @@ public class MatchObject {
         if(playerDataList.size() > 1){
             this.state = new MatchAvailableState(this);
         }else if(playerDataList.size() == 1) {
-            String publicDate = matchData.get(0).getPublicDate().split("after")[1];
             this.state = new MatchUnavailableState(this);
         }else{
             throw new MatchUnavailableException("Match is no longer available.");
         }
     }
 
-    public void saveMatchToDB(long guild_id,long matchId, long savedBy, String division) throws MatchSavedException, DivisionOwnershipException {
+    public void saveMatchToDB(long guild_id, long savedBy, String division) throws MatchSavedException, DivisionOwnershipException {
         MiniDao<Division> dao = new DivisionDao();
         String finalDivision = division;
         Stream<Division> divisionVerification = dao.getAll().stream().filter(d -> d.getDivisionName().equals(finalDivision) && guild_id == d.getGuild_id());
@@ -88,7 +96,7 @@ public class MatchObject {
         return matchId;
     }
 
-    public List<LeaguePlayerData> getPlayerDataList() {
+    public List<MatchPlayerData> getPlayerDataList() {
         return playerDataList;
     }
 
@@ -96,7 +104,7 @@ public class MatchObject {
         return state;
     }
 
-    public MatchData getMatchData() {
-        return matchData.get(0);
+    public MatchPublicDateParser getMatchPublicDateParser() {
+        return matchPublicDateParser;
     }
 }

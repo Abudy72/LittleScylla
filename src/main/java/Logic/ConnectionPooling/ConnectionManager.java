@@ -27,7 +27,7 @@ public class ConnectionManager {
         dataSource.setUsername("postgres");
         dataSource.setPassword("postgres");
         ArrayList<String> datasourceInit = new ArrayList<String>();
-        datasourceInit.add("SET SCHEMA 'LittleMonster';");
+        datasourceInit.add("SET SCHEMA 'little_monster';");
         dataSource.setConnectionInitSqls(datasourceInit);
         dataSource.setMinIdle(5);
         dataSource.setMaxIdle(10);
@@ -41,6 +41,10 @@ public class ConnectionManager {
             e.printStackTrace();
          throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public static void releaseConnection(Connection connection){
+        try{connection.close();}catch (SQLException e){System.out.println("unable to close connection");}
     }
     private ConnectionManager(){}
 }

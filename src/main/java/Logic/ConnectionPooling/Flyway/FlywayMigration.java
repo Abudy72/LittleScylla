@@ -19,7 +19,7 @@ public class FlywayMigration {
         /*String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
         String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();*/
-        Flyway flyway = Flyway.configure().dataSource("jdbc:postgresql://localhost:5432/postgres","postgres","postgres").schemas("LittleMonster").load();
+        Flyway flyway = Flyway.configure().dataSource("jdbc:postgresql://localhost:5432/postgres","postgres","postgres").schemas("little_monster").load();
         flyway.migrate();
     }
 

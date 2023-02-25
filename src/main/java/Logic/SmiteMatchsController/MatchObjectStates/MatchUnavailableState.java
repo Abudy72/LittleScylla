@@ -21,10 +21,11 @@ public class MatchUnavailableState implements MatchState{
                 matchObject.getMatchId(),
                 savedBy,
                 new Date(System.currentTimeMillis()),
-                matchObject.getMatchData().getDate(),
+                matchObject.getMatchPublicDateParser().getTimestamp(),
                 division,
                 false);
         dao.save(newLog);
-        throw new MatchUnavailableException("Match is still hidden. Match is scheduled to be processed shortly 7 days after" + matchObject.getMatchData().getDate());
+        throw new MatchUnavailableException("Match is still hidden. Match is scheduled to be processed shortly 7 days after "
+                + matchObject.getMatchPublicDateParser().getTimestamp());
     }
 }

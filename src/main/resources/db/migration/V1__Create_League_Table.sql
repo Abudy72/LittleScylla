@@ -1,4 +1,4 @@
-CREATE SCHEMA IF NOT EXISTS LittleMonster;
+CREATE SCHEMA IF NOT EXISTS little_monster;
 CREATE TABLE IF NOT EXISTS League(
     guild_id bigint NOT NULL PRIMARY KEY,
     guild_name varchar(255) not null UNIQUE,

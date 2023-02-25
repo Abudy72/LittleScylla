@@ -3,9 +3,10 @@ package Logic.SmiteMatchsController.MatchObjectStates;
 import Logic.Dao.LeaguePlayerDao;
 import Logic.Dao.MatchHistoryDao;
 import Logic.Dao.Model.MatchHistoryLog;
+import Logic.Dao.VerifiedPlayerDao;
 import Logic.Exceptions.MatchSavedException;
 import Logic.SmiteMatchsController.MatchObject;
-import Logic.SmiteMatchsController.PlayerDataModule.LeaguePlayerData;
+import Logic.SmiteMatchsController.PlayerDataModule.MatchPlayerData;
 
 import java.sql.Date;
 import java.util.List;
@@ -52,9 +53,13 @@ public class SaveMatchDetailsFacade {
         If the match is still hidde, the (saved) value is set to false, otherwise true
          */
         this.saveMatchIdToDB(matchObject,savedBy);
-        List<LeaguePlayerData> playerDataList = matchObject.getPlayerDataList();
-        LeaguePlayerDao dao = new LeaguePlayerDao(guild_id, division);
-        for(LeaguePlayerData data: playerDataList){
+        List<MatchPlayerData> playerDataList = matchObject.getPlayerDataList();
+        LeaguePlayerDao dao = new LeaguePlayerDao(guild_id, matchId);
+        VerifiedPlayerDao playerDao = new VerifiedPlayerDao(guild_id);
+        for(MatchPlayerData data: playerDataList){
+            data.setDivision(this.division);
+            long discordId = playerDao.getDiscordIdByIGN(data.getPlayerName());
+            data.setDiscordId(discordId);
             dao.save(data);
         }
     }

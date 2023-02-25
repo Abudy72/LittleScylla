@@ -2,6 +2,7 @@ package Interface;
 
 import Interface.CommandsModule.AcceptCommand;
 import Interface.CommandsModule.ManualVerificationCommand;
+import Interface.CommandsModule.SaveMatchStatsCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +28,8 @@ public class CommandHandler extends ListenerAdapter {
             case VERIFY:
                 new ManualVerificationCommand().handleCommand(event);
                 break;
+            case SAVE:
+                new SaveMatchStatsCommand().handleCommand(event);
         }
     }
 }
