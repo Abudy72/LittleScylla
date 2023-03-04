@@ -58,6 +58,7 @@ public class MatchObject {
 
     private String loadMatchDetails(){
         MatchObjController matchObjController = new MatchObjController(matchId);
+        System.out.println(matchObjController.getEndPoint());
         IController controller = new APIController();
         HttpResponse response = controller.sendRequest(matchObjController);
         if(response.getStatusLine().getStatusCode() == 200){
@@ -89,7 +90,7 @@ public class MatchObject {
         Stream<Division> divisionVerification = dao.getAll().stream().filter(d -> d.getDivisionName().equals(finalDivision) && guild_id == d.getGuild_id());
         if(divisionVerification.findAny().isPresent()){
             this.state.saveMatchToDB(guild_id,matchId,savedBy,division);
-        }else throw new DivisionOwnershipException("This server does not have a division with the name: " + finalDivision);
+        }else throw new DivisionOwnershipException("This server does not have a division with name: " + finalDivision);
     }
 
     public long getMatchId() {
@@ -106,5 +107,9 @@ public class MatchObject {
 
     public MatchPublicDateParser getMatchPublicDateParser() {
         return matchPublicDateParser;
+    }
+
+    public static void main(String[] args) {
+        MatchObject m = new MatchObject(1291409417);
     }
 }

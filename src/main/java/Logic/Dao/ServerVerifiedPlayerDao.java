@@ -1,14 +1,12 @@
 package Logic.Dao;
 
 import Logic.ConnectionPooling.ConnectionManager;
-import Logic.Dao.Model.Division;
 import Logic.Dao.Model.ServerVerifiedPlayer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 

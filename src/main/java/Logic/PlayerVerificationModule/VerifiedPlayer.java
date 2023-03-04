@@ -4,7 +4,6 @@ import Logic.Exceptions.PlayerNotFoundException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 public class VerifiedPlayer{

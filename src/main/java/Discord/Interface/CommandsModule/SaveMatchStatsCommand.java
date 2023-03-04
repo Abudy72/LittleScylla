@@ -1,4 +1,4 @@
-package Interface.CommandsModule;
+package Discord.Interface.CommandsModule;
 
 import Logic.Exceptions.DivisionOwnershipException;
 import Logic.Exceptions.ExceptionResponseHandler;

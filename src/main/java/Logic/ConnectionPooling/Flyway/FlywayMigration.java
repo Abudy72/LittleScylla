@@ -3,23 +3,14 @@ package Logic.ConnectionPooling.Flyway;
 
 import org.flywaydb.core.Flyway;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 public class FlywayMigration {
 
     public static void migrate() {
-        URI dbUri;
-        try {
-            dbUri = new URI(System.getenv("DATABASE_URL"));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
-        /*String username = dbUri.getUserInfo().split(":")[0];
-        String password = dbUri.getUserInfo().split(":")[1];
-        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();*/
-        Flyway flyway = Flyway.configure().dataSource("jdbc:postgresql://localhost:5432/postgres","postgres","postgres").schemas("little_monster").load();
+        String username = System.getenv("Database_USERNAME");
+        String password = System.getenv("Database_PASSWORD");
+        String url = System.getenv("Database_URL");
+
+        Flyway flyway = Flyway.configure().dataSource(url,username,password).schemas("little_monster").load();
         flyway.migrate();
     }
 

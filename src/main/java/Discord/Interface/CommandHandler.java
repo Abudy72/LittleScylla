@@ -1,8 +1,8 @@
-package Interface;
+package Discord.Interface;
 
-import Interface.CommandsModule.AcceptCommand;
-import Interface.CommandsModule.ManualVerificationCommand;
-import Interface.CommandsModule.SaveMatchStatsCommand;
+import Discord.Interface.CommandsModule.AcceptCommand;
+import Discord.Interface.CommandsModule.ManualVerificationCommand;
+import Discord.Interface.CommandsModule.SaveMatchStatsCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;

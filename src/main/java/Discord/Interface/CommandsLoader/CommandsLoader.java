@@ -1,7 +1,5 @@
-package Interface.CommandsLoader;
+package Discord.Interface.CommandsLoader;
 
-import Interface.CommandsModule.AcceptCommand;
-import Interface.CommandsModule.CustomCommandListener;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
@@ -10,10 +8,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 public class CommandsLoader {
     private final static LinkedList<CommandData> commandsList = new LinkedList<>();

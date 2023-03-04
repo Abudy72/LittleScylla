@@ -1,7 +1,6 @@
 package Logic.Dao;
 
 import Logic.ConnectionPooling.ConnectionManager;
-import Logic.Exceptions.UnableToSaveMatchException;
 import Logic.PlayerVerificationModule.VerifiedPlayer;
 
 import java.sql.Connection;

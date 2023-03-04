@@ -1,4 +1,4 @@
-package Interface.CommandsModule.AcceptCommandStrategies;
+package Discord.Interface.CommandsModule.AcceptCommandStrategies;
 
 import Logic.Exceptions.PlayerVerifiedException;
 

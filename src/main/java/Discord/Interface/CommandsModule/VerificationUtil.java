@@ -1,4 +1,4 @@
-package Interface.CommandsModule;
+package Discord.Interface.CommandsModule;
 
 import Logic.Dao.LeagueIDsDao;
 import Logic.Dao.Model.LeagueIDs;

@@ -20,6 +20,6 @@ public class MatchPublicDateParser {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        return Timestamp.from(actualPublicDate.toInstant());
+        return Timestamp.from(actualPublicDate.toInstant().plusSeconds(604800));
     }
 }

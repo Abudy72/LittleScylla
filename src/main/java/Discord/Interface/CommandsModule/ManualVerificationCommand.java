@@ -1,4 +1,4 @@
-package Interface.CommandsModule;
+package Discord.Interface.CommandsModule;
 
 import Logic.Dao.Dao;
 import Logic.Dao.Model.ServerVerifiedPlayer;
@@ -21,9 +21,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static Interface.CommandsModule.AcceptCommand.IGN;
-import static Interface.CommandsModule.VerificationUtil.sendPlayerDataToVerificationChannel;
-
 public class ManualVerificationCommand extends CustomCommandListener{
     private final static String RANK = "rank";
     @Override
@@ -31,7 +28,7 @@ public class ManualVerificationCommand extends CustomCommandListener{
         event.deferReply().setEphemeral(true).queue();
         Dao<VerifiedPlayer> dao = new VerifiedPlayerDao(event.getGuild().getIdLong());
         try{
-            String ign = event.getOption(IGN).getAsString();
+            String ign = event.getOption(AcceptCommand.IGN).getAsString();
             String rank = event.getOption(RANK).getAsString();
             User user = event.getOption("id").getAsUser();
             Member member = event.getOption("id").getAsMember();
@@ -48,7 +45,7 @@ public class ManualVerificationCommand extends CustomCommandListener{
                             new ServerVerifiedPlayer(user.getIdLong(), event.getGuild().getIdLong())
                     );
                     event.getHook().sendMessageEmbeds(playerNewToServer(event.getGuild(),user, playerData)).queue();
-                    sendPlayerDataToVerificationChannel(event.getGuild(),existingPlayer.get(),this,member);
+                    VerificationUtil.sendPlayerDataToVerificationChannel(event.getGuild(),existingPlayer.get(),this,member);
                 }
             }else{
                 VerifiedPlayer newPlayerData = new VerifiedPlayer(user.getIdLong(),ign,platform,rankParser(rank), event.getMember().getId());
@@ -58,7 +55,7 @@ public class ManualVerificationCommand extends CustomCommandListener{
                         new ServerVerifiedPlayer(user.getIdLong(), event.getGuild().getIdLong())
                 );
                 event.getHook().sendMessageEmbeds(successfulMessage(event.getGuild())).queue();
-                sendPlayerDataToVerificationChannel(event.getGuild(),existingPlayer.get(), this, member);
+                VerificationUtil.sendPlayerDataToVerificationChannel(event.getGuild(),existingPlayer.get(), this, member);
             }
 
 

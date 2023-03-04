@@ -84,7 +84,7 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
     @Override
     public boolean save(MatchHistoryLog matchObject) {
         String statement = "INSERT INTO match_history (matchid,saved_by,publicdate,division,status)" +
-                "VALUES (?,?,?,?,?)";
+                "VALUES (?,?,?,?,?) on conflict (matchid) do nothing ";
         try{
             Connection connection = ConnectionManager.getConnection();
             PreparedStatement p = connection.prepareStatement(statement);

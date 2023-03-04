@@ -1,14 +1,15 @@
-package Interface.CommandsModule;
+package Discord.Interface.CommandsModule;
 
-import Interface.CommandsModule.AcceptCommandStrategies.ExistingUser;
-import Interface.CommandsModule.AcceptCommandStrategies.NewUser;
-import Interface.CommandsModule.AcceptCommandStrategies.VerificationStrategies;
+import Discord.Interface.CommandsModule.AcceptCommandStrategies.ExistingUser;
+import Discord.Interface.CommandsModule.AcceptCommandStrategies.NewUser;
+import Discord.Interface.CommandsModule.AcceptCommandStrategies.VerificationStrategies;
 import Logic.Dao.Dao;
 import Logic.Dao.LeagueIDsDao;
 import Logic.Dao.VerifiedPlayerDao;
 import Logic.Exceptions.ExceptionResponseHandler;
 import Logic.Exceptions.PlayerNotFoundException;
 import Logic.Exceptions.PlayerVerifiedException;
+import Logic.Exceptions.UnknownPlatformId;
 import Logic.PlayerVerificationModule.VerifiedPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -19,8 +20,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.awt.*;
 import java.util.Optional;
 
-import static Interface.CommandsModule.VerificationUtil.notifyVerificationChannel;
-import static Interface.CommandsModule.VerificationUtil.sendPlayerDataToVerificationChannel;
+import static Discord.Interface.CommandsModule.VerificationUtil.notifyVerificationChannel;
+import static Discord.Interface.CommandsModule.VerificationUtil.sendPlayerDataToVerificationChannel;
 
 
 public class AcceptCommand extends CustomCommandListener {
@@ -38,9 +39,9 @@ public class AcceptCommand extends CustomCommandListener {
             String ign = event.getOption(IGN).getAsString();
             long memberId = event.getMember().getIdLong();
             int platformId = event.getOption(PLATFORM_ID).getAsInt();
-            String platform = this.parsePlatform(platformId);
             Optional<VerifiedPlayer> existingPlayer = dao.get(memberId);
             try{
+                String platform = this.parsePlatform(platformId);
                 VerifiedPlayer newPlayerData = new VerifiedPlayer(memberId,ign,platform);
                 VerificationStrategies strategies = new NewUser(newPlayerData,event.getGuild().getIdLong());
                 if(existingPlayer.isPresent()){
@@ -52,7 +53,7 @@ public class AcceptCommand extends CustomCommandListener {
                 strategies.verifyPlayer();
                 sendPlayerDataToVerificationChannel(event.getGuild(),newPlayerData,this,event.getMember());
                 event.getHook().sendMessageEmbeds(prettyMessage(event.getGuild(),ign)).queue();
-            }catch (PlayerNotFoundException | PlayerVerifiedException e){
+            }catch (PlayerNotFoundException | PlayerVerifiedException | UnknownPlatformId e){
                 e.printStackTrace();
                 event.getHook().sendMessageEmbeds(ExceptionResponseHandler.handle(event.getGuild(),e).build()).queue();
             }catch (RuntimeException e){
@@ -63,7 +64,7 @@ public class AcceptCommand extends CustomCommandListener {
         }
     }
 
-    private String parsePlatform(int platformId){
+    private String parsePlatform(int platformId) throws UnknownPlatformId {
         if(platformId == 1){
             return PC;
         }else if(platformId == 2){
@@ -71,7 +72,7 @@ public class AcceptCommand extends CustomCommandListener {
         }else if(platformId == 3){
             return Xbox;
         }
-        throw new RuntimeException("Unknown platform, please choose 1 for PC, 2 for PSN, 3 for Xbox");
+        throw new UnknownPlatformId("Unknown platform, please choose 1 for PC, 2 for PSN, 3 for Xbox");
     }
     private MessageEmbed prettyMessage(Guild guild, String ign){
         EmbedBuilder builder = new EmbedBuilder();
