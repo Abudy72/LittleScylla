@@ -28,6 +28,25 @@ public class MemberRankedDetails {
         return tier;
     }
 
+    public String getActualRank(){
+        double doubleTier = tier;
+        if(doubleTier / 5 <= 0 && doubleTier <= 5){
+            return "Bronze " + ((5 % doubleTier) + 1);
+        }else if(doubleTier / 10 <= 0 && doubleTier <= 10) {
+            return "Silver " + ((10 % doubleTier) + 1);
+        }else if(doubleTier / 15 <= 0 && doubleTier <= 15) {
+            return "Gold " + ((15 % doubleTier) + 1);
+        }else if(doubleTier / 20 <= 0 && doubleTier <= 20) {
+            return "Platinum " + ((20 % doubleTier) + 1);
+        }else if(doubleTier / 25 <= 0 && doubleTier <= 25) {
+            return "Diamond " + ((25 % doubleTier) + 1);
+        }else if(this.tier == 26) {
+            return "Masters";
+        }else if(this.tier == 27) {
+            return "Grand Master";
+        }else return "";
+    }
+
     public void setPlatForm(String platForm) {
         this.platForm = platForm;
     }

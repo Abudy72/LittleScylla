@@ -1,41 +1,40 @@
 package Logic.Dao;
 
 import Logic.ConnectionPooling.ConnectionManager;
-import Logic.SmiteMatchsController.PlayerDataModule.LeaguePlayerData;
+import Logic.SmiteMatchsController.PlayerDataModule.MatchPlayerData;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
 
-public class LeaguePlayerDao implements MiniDao<LeaguePlayerData> {
+public class LeaguePlayerDao implements MiniDao<MatchPlayerData> {
     private final long guildId;
-    private final String division;
+    private final long matchId;
 
-    public LeaguePlayerDao(long guildId, String division ) {
+    public LeaguePlayerDao(long guildId, long matchId) {
         this.guildId = guildId;
-        this.division = division;
+        this.matchId = matchId;
     }
 
     @Override
-    public List<LeaguePlayerData> getAll() {
+    public List<MatchPlayerData> getAll() {
         String statement = "SELECT * FROM league_player_stats where guild_id = ?";
-        LinkedList<LeaguePlayerData> resultList = new LinkedList<>();
-        try{
+        LinkedList<MatchPlayerData> resultList = new LinkedList<>();
+        /*try{
             Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(statement);
             preparedStatement.setLong(1,this.guildId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
-                LeaguePlayerData.PlayerDataBuilder builder = new LeaguePlayerData.PlayerDataBuilder(
+                MatchPlayerData.PlayerDataBuilder builder = new MatchPlayerData.PlayerDataBuilder(
                         resultSet.getString("ign"),
                         resultSet.getString("division"),
                         resultSet.getString("team"),
                         resultSet.getLong("guild_id"));
-                LeaguePlayerData p= builder.setWins(resultSet.getInt("wins"))
+                MatchPlayerData p= builder.setWins(resultSet.getInt("wins"))
                         .setDamageTaken(resultSet.getInt("damage_taken"))
                         .setDamageMitigated(resultSet.getInt("damage_mitigated"))
                         .setPlayerDamage(resultSet.getInt("player_damage"))
@@ -54,64 +53,55 @@ public class LeaguePlayerDao implements MiniDao<LeaguePlayerData> {
             e.getMessage();
             e.printStackTrace();
             throw new RuntimeException();
-        }
+        }*/
         return resultList;
     }
 
     @Override
-    public boolean save(LeaguePlayerData leaguePlayerData) {
-        String updateStatement = "insert into league_player_stats (ign, kills, deaths, assists, wins, losses, player_damage, damage_mitigated, gold_earned, wards_placed, first_blood_kills," +
-                "division_name, total_match_duration, damage_taken, team_name,guild_id)" +
-                "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) on conflict (ign,division_name) do " +
-                "update set (kills, deaths, assists, wins, losses, player_damage, damage_mitigated, gold_earned, wards_placed, first_blood_kills," +
-                "total_match_duration, damage_taken) =" +
-                "(league_player_stats.kills + ?," +
-                "league_player_stats.deaths + ?," +
-                "league_player_stats.assists + ?," +
-                "league_player_stats.wins + ?," +
-                "league_player_stats.losses + ?, " +
-                "league_player_stats.player_damage + ?," +
-                "league_player_stats.damage_mitigated + ?," +
-                "league_player_stats.gold_earned + ?," +
-                "league_player_stats.wards_placed + ?," +
-                "league_player_stats.first_blood_kills + ?," +
-                "league_player_stats.total_match_duration + ?," +
-                "league_player_stats.damage_taken + ?)" ;
-
+    public boolean save(MatchPlayerData matchPlayerData) {
+       String insertStatement = "INSERT INTO league_player_stats" +
+               "(ign, division_name, team_name, discord_id, damage_taken, damage_mitigated, player_damage, loser, winner, kills, deaths, assists, gold_earned," +
+               " wards_placed, total_match_duration, first_blood_kills, self_heal, damage_physical_dealt, damage_magical_dealt, item1, item2, item3, item4, item5, item6, active1, active2, match_id)" +
+               "VALUES(?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
-            PreparedStatement statement = connection.prepareStatement(updateStatement);
-            int j = 1;
-            statement.setString(j++, leaguePlayerData.getPlayerName());
-            j = AssignJ(leaguePlayerData, statement, j);
-            statement.setString(j++, this.division);
-            statement.setInt(j++, leaguePlayerData.getTotalMatchDuration());
-            statement.setInt(j++, leaguePlayerData.getDamageTaken());
-            statement.setString(j++,leaguePlayerData.getTeam());
-            statement.setLong(j++,this.guildId);
-            //update case.
-            j = AssignJ(leaguePlayerData, statement, j);
-            statement.setInt(j++, leaguePlayerData.getTotalMatchDuration());
-            statement.setInt(j++, leaguePlayerData.getDamageTaken());
+           PreparedStatement preparedStatement = connection.prepareStatement(insertStatement);
+           preparedStatement.setString(1, matchPlayerData.getPlayerName());
+           preparedStatement.setString(2, matchPlayerData.getDivision());
+           preparedStatement.setString(3, matchPlayerData.getTeam());
+           preparedStatement.setLong(4, matchPlayerData.getDiscordId()); //DISCORD ID
+           preparedStatement.setInt(5, matchPlayerData.getDamageTaken());
+           preparedStatement.setInt(6, matchPlayerData.getDamageMitigated());
+           preparedStatement.setInt(7, matchPlayerData.getPlayerDamage());
+           preparedStatement.setBoolean(8, matchPlayerData.getLoser());
+           preparedStatement.setBoolean(9, matchPlayerData.getWinner());
+           preparedStatement.setInt(10, matchPlayerData.getKills());
+           preparedStatement.setInt(11, matchPlayerData.getDeaths());
+           preparedStatement.setInt(12, matchPlayerData.getAssists());
+           preparedStatement.setInt(13, matchPlayerData.getGoldEarned());
+           preparedStatement.setInt(14, matchPlayerData.getWardsPlaced());
+           preparedStatement.setInt(15, matchPlayerData.getTotalMatchDuration());
+           preparedStatement.setInt(16, matchPlayerData.getFb_Kills());
+           preparedStatement.setInt(17, matchPlayerData.getSelfHeal());
+           preparedStatement.setInt(18, matchPlayerData.getDamagePhysicalDone());
+           preparedStatement.setInt(19, matchPlayerData.getDamageMagicalDone());
+           preparedStatement.setString(20, matchPlayerData.getItemPurchase1());
+           preparedStatement.setString(21, matchPlayerData.getItemPurchase2());
+           preparedStatement.setString(22, matchPlayerData.getItemPurchase3());
+           preparedStatement.setString(23, matchPlayerData.getItemPurchase4());
+           preparedStatement.setString(24, matchPlayerData.getItemPurchase5());
+           preparedStatement.setString(25, matchPlayerData.getItemPurchase6());
+           preparedStatement.setString(26, matchPlayerData.getActive1());
+           preparedStatement.setString(27, matchPlayerData.getActive2());
+           preparedStatement.setLong(28,matchId);
 
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return false;
-    }
-
-    private int AssignJ(LeaguePlayerData leaguePlayerData, PreparedStatement statement, int j) throws SQLException {
-        statement.setInt(j++, leaguePlayerData.getKills());
-        statement.setInt(j++, leaguePlayerData.getDeaths());
-        statement.setInt(j++, leaguePlayerData.getAssists());
-        statement.setInt(j++, leaguePlayerData.getWins());
-        statement.setInt(j++, leaguePlayerData.getLosses());
-        statement.setInt(j++, leaguePlayerData.getPlayerDamage());
-        statement.setInt(j++, leaguePlayerData.getDamageMitigated());
-        statement.setInt(j++, leaguePlayerData.getGoldEarned());
-        statement.setInt(j++, leaguePlayerData.getWardsPlaced());
-        statement.setInt(j++, leaguePlayerData.getFb_Kills());
-        return j;
+           return preparedStatement.executeUpdate() == 1;
+       }catch (SQLException e){
+           System.out.println(e.getMessage());
+           e.printStackTrace();
+       }finally {
+           ConnectionManager.releaseConnection(connection);
+       }
+       return false;
     }
 }

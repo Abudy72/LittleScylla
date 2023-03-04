@@ -2,7 +2,6 @@ package Logic.ConnectionPooling;
 
 import org.apache.commons.dbcp.BasicDataSource;
 
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,27 +9,16 @@ import java.util.ArrayList;
 public class ConnectionManager {
     private static final BasicDataSource dataSource = new BasicDataSource();
     static {
-        String username = null, password = null,dbUrl = null;
-        /*URI dbUri;
-        try{
-            dbUri = new URI(System.getenv("DATABASE_URL"));
-            username = dbUri.getUserInfo().split(":")[0]; //jdbc:postgresql://localhost:5432/postgres
-            password = dbUri.getUserInfo().split(":")[1];
-            dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }*/
-
+        String username = System.getenv("Database_USERNAME");
+        String password = System.getenv("Database_PASSWORD");
+        String url = System.getenv("Database_URL");
         //Setting database credentials
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
         ArrayList<String> datasourceInit = new ArrayList<String>();
-        datasourceInit.add("SET SCHEMA 'LittleMonster';");
+        datasourceInit.add("SET SCHEMA 'little_monster';");
         dataSource.setConnectionInitSqls(datasourceInit);
-        dataSource.setMinIdle(5);
-        dataSource.setMaxIdle(10);
         dataSource.setMaxActive(20);
     }
 
@@ -41,6 +29,10 @@ public class ConnectionManager {
             e.printStackTrace();
          throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public static void releaseConnection(Connection connection){
+        try{connection.close();}catch (SQLException e){System.out.println("unable to close connection");}
     }
     private ConnectionManager(){}
 }

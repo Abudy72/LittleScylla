@@ -6,6 +6,8 @@ import Logic.APIController.IController;
 import Logic.Exceptions.SmiteAPIUnavailableException;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -18,6 +20,7 @@ public class SessionManager extends EndPointBuilder {
     public final static String DEV_KEY = System.getenv("DEV_KEY");
     private final static String AUTH_KEY = System.getenv("AUTH_KEY");
     public final static String SMITE_API = "https://api.smitegame.com/smiteapi.svc";
+    public static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
     private static SessionManager instance;
     private SessionObj currentSession;
 
@@ -59,7 +62,7 @@ public class SessionManager extends EndPointBuilder {
 
             currentSession = SessionObj.createSession(jsonResponse);
         }
-        System.out.println(currentSession);
+        logger.info(currentSession.toString());
     }
 
     private boolean validateSession() {

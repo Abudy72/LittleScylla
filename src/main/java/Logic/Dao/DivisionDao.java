@@ -15,8 +15,8 @@ public class DivisionDao implements MiniDao<Division> {
     public List<Division> getAll() {
         String statement = "SELECT * FROM division";
         LinkedList<Division> resultList = new LinkedList<>();
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             ResultSet resultSet = connection.prepareStatement(statement).executeQuery();
             while(resultSet.next()){
                 Division server = new Division(
@@ -27,6 +27,8 @@ public class DivisionDao implements MiniDao<Division> {
             }
         }catch (SQLException e){
             throw new RuntimeException(e);
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return resultList;
     }
@@ -44,6 +46,8 @@ public class DivisionDao implements MiniDao<Division> {
         }catch (SQLException e){
             e.printStackTrace();
             System.out.println(e.getMessage());
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return false;
     }

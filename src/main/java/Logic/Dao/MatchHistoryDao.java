@@ -26,7 +26,7 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
                         resultSet.getLong("matchid"),
                         resultSet.getLong("saved_by"),
                         resultSet.getDate("date_saved"),
-                        resultSet.getDate("publicdate"),
+                        resultSet.getTimestamp("publicdate"),
                         resultSet.getString("division"),
                         resultSet.getBoolean("status")
                 );
@@ -48,7 +48,7 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
         try{
             Connection connection = ConnectionManager.getConnection();
             PreparedStatement p = connection.prepareStatement(statement);
-            p.setDate(1,matchObject.getPublicDate());
+            p.setTimestamp(1,matchObject.getPublicDate());
             p.setBoolean(2,matchObject.isSaved());
             p.setLong(3, matchObject.getMatchId());
             return p.executeUpdate() == 1;
@@ -69,7 +69,7 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
                         resultSet.getLong("matchid"),
                         resultSet.getLong("saved_by"),
                         resultSet.getDate("date_saved"),
-                        resultSet.getDate("publicdate"),
+                        resultSet.getTimestamp("publicdate"),
                         resultSet.getString("division"),
                         resultSet.getBoolean("status")
                 );
@@ -84,13 +84,13 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
     @Override
     public boolean save(MatchHistoryLog matchObject) {
         String statement = "INSERT INTO match_history (matchid,saved_by,publicdate,division,status)" +
-                "VALUES (?,?,?,?,?)";
+                "VALUES (?,?,?,?,?) on conflict (matchid) do nothing ";
         try{
             Connection connection = ConnectionManager.getConnection();
             PreparedStatement p = connection.prepareStatement(statement);
             p.setLong(1,matchObject.getMatchId());
             p.setLong(2,matchObject.getSavedBy());
-            p.setDate(3,matchObject.getPublicDate());
+            p.setTimestamp(3,matchObject.getPublicDate());
             p.setString(4,matchObject.getDivision());
             p.setBoolean(5, matchObject.isSaved());
             return p.executeUpdate() == 1;

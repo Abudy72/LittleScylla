@@ -4,8 +4,8 @@ import Logic.APIController.APIController;
 import Logic.APIController.IController;
 import Logic.Exceptions.PlayerNotFoundException;
 import Logic.Exceptions.SmiteAPIUnavailableException;
-import Logic.PlayerVerificationModule.MemberDetailsGenerator.MemberRankedDetails;
 import Logic.PlayerVerificationModule.MemberDetailsGenerator.MemberDetailsAPIController;
+import Logic.PlayerVerificationModule.MemberDetailsGenerator.MemberRankedDetails;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -59,7 +59,11 @@ public class SmitePlayer {
             try {
                 jsonResponse = EntityUtils.toString(response.getEntity());
                 List<SmitePlayer> resultSet = parseResponseIntoPlayerDetails(jsonResponse);
-                if(resultSet.isEmpty()) throw new PlayerNotFoundException("Unable to find player, either the IGN/Platform selected is wrong or profile is hidden.");
+                if(resultSet.isEmpty()){
+                    throw new PlayerNotFoundException("Unable to find player, either the IGN/Platform selected is wrong or profile is hidden.");
+                }else if(resultSet.get(0).getPlayerId() == 0){
+                    throw new PlayerNotFoundException("Unable to find player, either the IGN/Platform selected is wrong or profile is hidden.");
+                }
                return resultSet.get(0);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
@@ -71,24 +75,6 @@ public class SmitePlayer {
         }
     }
     protected SmitePlayer(){}
-    /*protected SmitePlayer(String pc_IGN, String console_IGN, int hoursPlayed, int playerId,
-                       String last_login, String region, String accountDate, MemberRankedDetails rankedConquest,
-                       MemberRankedDetails rankedConquestController, MemberRankedDetails rankedDuel,
-                       MemberRankedDetails rankedDuelController, MemberRankedDetails rankedJoust, MemberRankedDetails rankedJoustController) {
-        this.pc_IGN = pc_IGN;
-        this.accountDate = accountDate;
-        this.console_IGN = console_IGN;
-        this.hoursPlayed = hoursPlayed;
-        this.playerId = playerId;
-        this.last_login = last_login;
-        this.region = region;
-        this.rankedConquest = rankedConquest;
-        this.rankedConquestController = rankedConquestController;
-        this.rankedDuel = rankedDuel;
-        this.rankedDuelController = rankedDuelController;
-        this.rankedJoust = rankedJoust;
-        this.rankedJoustController = rankedJoustController;
-    }*/
 
     public String getPc_IGN() {
         return pc_IGN;
@@ -214,5 +200,28 @@ public class SmitePlayer {
         result.removeIf(Objects::isNull);
         return result;
 
+    }
+
+    public String pcRankedDetailsPrettyPrint(){
+        return "Conq.: " + this.getRankedConquest().getHi_rezMMR() + ": " + this.getRankedConquest().getActualRank()
+                + "\nJoust: " + this.getRankedJoust().getHi_rezMMR() + ": " +this.getRankedJoust().getActualRank()
+                + "\nDuel: " + this.getRankedDuel().getHi_rezMMR() + ": " +this.getRankedDuel().getActualRank();
+    }
+    public String consoleRankedDetailsPrettyPrint(){
+        return "Conq.: " + this.getRankedConquestController().getHi_rezMMR() + ": " + this.getRankedConquestController().getActualRank()
+                + "\nJoust: " + this.getRankedJoustController().getHi_rezMMR() + ": " + this.getRankedJoustController().getActualRank()
+                + "\nDuel: " + this.getRankedDuelController().getHi_rezMMR() + ": " + this.getRankedDuelController().getActualRank();
+    }
+
+    @Override
+    public String toString() {
+        return "\nAccountDate: `" + this.accountDate
+                + "`\nHours Played: " + this.hoursPlayed
+                + "\nConq MMR: " + this.rankedConquest.getHi_rezMMR()
+                + "\nDuel MMR: " + this.rankedDuel.getHi_rezMMR()
+                + "\nJoust MMR: " + this.rankedJoust.getHi_rezMMR()
+                + "\nConq (Controller) MMR: " + this.rankedConquestController.getHi_rezMMR()
+                + "\nDuel (Controller) MMR: " + this.rankedDuelController.getHi_rezMMR()
+                + "\nJoust (Controller) MMR: " + this.rankedJoustController.getHi_rezMMR();
     }
 }
