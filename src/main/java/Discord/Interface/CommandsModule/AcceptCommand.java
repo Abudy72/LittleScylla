@@ -4,7 +4,7 @@ import Discord.Interface.CommandsModule.AcceptCommandStrategies.ExistingUser;
 import Discord.Interface.CommandsModule.AcceptCommandStrategies.NewUser;
 import Discord.Interface.CommandsModule.AcceptCommandStrategies.VerificationStrategies;
 import Logic.Dao.Dao;
-import Logic.Dao.LeagueIDsDao;
+import Logic.Dao.LeagueRolesInfoDao;
 import Logic.Dao.VerifiedPlayerDao;
 import Logic.Exceptions.ExceptionResponseHandler;
 import Logic.Exceptions.PlayerNotFoundException;
@@ -96,7 +96,7 @@ public class AcceptCommand extends CustomCommandListener {
         builder.addField(field1);
         builder.addField(field2);
 
-        LeagueIDsDao dao = new LeagueIDsDao();
+        LeagueRolesInfoDao dao = new LeagueRolesInfoDao();
         dao.get(guild.getIdLong()).ifPresent(leagueInfo -> {
             notifyVerificationChannel(guild, builder, leagueInfo);
         });

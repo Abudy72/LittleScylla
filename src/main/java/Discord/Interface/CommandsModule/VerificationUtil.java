@@ -1,7 +1,7 @@
 package Discord.Interface.CommandsModule;
 
-import Logic.Dao.LeagueIDsDao;
-import Logic.Dao.Model.LeagueIDs;
+import Logic.Dao.LeagueRolesInfoDao;
+import Logic.Dao.Model.LeagueRolesInfo;
 import Logic.PlayerVerificationModule.SmitePlayer;
 import Logic.PlayerVerificationModule.VerifiedPlayer;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import java.awt.*;
 
 public class VerificationUtil {
-    public static long getPlatformRoleId(VerifiedPlayer player, LeagueIDs entities){
+    public static long getPlatformRoleId(VerifiedPlayer player, LeagueRolesInfo entities){
         switch (player.getPlatform().toString()){
             case "PC":
                 return entities.getPc_uid();
@@ -25,7 +25,7 @@ public class VerificationUtil {
                 return 0;
         }
     }
-    public static long getRankRoleId(LeagueIDs entities,VerifiedPlayer player){
+    public static long getRankRoleId(LeagueRolesInfo entities, VerifiedPlayer player){
         switch (player.getCurrentRank()){
             case GrandMaster:
                 return entities.getGrandMasters_uid();
@@ -48,7 +48,7 @@ public class VerificationUtil {
     public static void sendPlayerDataToVerificationChannel(Guild guild,VerifiedPlayer player, CustomCommandListener commandListener, Member member){
         SmitePlayer p =player.getSmiteAccount();
         EmbedBuilder builder = new EmbedBuilder();
-        LeagueIDsDao dao = new LeagueIDsDao();
+        LeagueRolesInfoDao dao = new LeagueRolesInfoDao();
         builder.setColor(Color.GREEN);
         if(p != null){
             MessageEmbed.Field pcRankedDetails = new MessageEmbed.Field("PC Ranked Details",p.pcRankedDetailsPrettyPrint(),true);
@@ -72,7 +72,7 @@ public class VerificationUtil {
         });
     }
 
-    public static void notifyVerificationChannel(Guild guild, EmbedBuilder builder, LeagueIDs leagueInfo) {
+    public static void notifyVerificationChannel(Guild guild, EmbedBuilder builder, LeagueRolesInfo leagueInfo) {
         long verificationChannel = leagueInfo.getVerificationChannel_uid();
         TextChannel channel = guild.getTextChannelById(verificationChannel);
         if(channel != null){
