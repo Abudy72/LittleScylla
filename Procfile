@@ -1,0 +1,1 @@
+worker: mvn exec:java -Dexec.mainClass=DriverApp
