@@ -49,6 +49,7 @@ public class AcceptCommand extends CustomCommandListener {
                         smurfAlert(memberId,existingPlayer.get(),event.getGuild(), newPlayerData);
                     }
                     strategies = new ExistingUser(event.getGuild().getIdLong(),newPlayerData);
+                    newPlayerData = existingPlayer.get();
                 }
                 strategies.verifyPlayer();
                 sendPlayerDataToVerificationChannel(event.getGuild(),newPlayerData,this,event.getMember());
