@@ -1,1 +1,1 @@
-worker: mvn exec:java -Dexec.mainClass=DriverApp
+worker: java -jar target/LittleMonster-1.0-SNAPSHOT.jar
