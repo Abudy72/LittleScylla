@@ -1,0 +1,1 @@
+ALTER TABLE league ADD stats_role bigint default 0;

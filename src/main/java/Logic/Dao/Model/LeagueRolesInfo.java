@@ -1,6 +1,6 @@
 package Logic.Dao.Model;
 
-public class LeagueIDs {
+public class LeagueRolesInfo {
     private long guildId;
     private String name;
     private long bronze_uid;
@@ -19,6 +19,7 @@ public class LeagueIDs {
     private long pc_uid;
     private long xbox_uid;
     private long psn_uid;
+    private long stats_role;
 
 
     public long getGuildId() {
@@ -147,5 +148,13 @@ public class LeagueIDs {
 
     public void setPsn_uid(long psn_uid) {
         this.psn_uid = psn_uid;
+    }
+
+    public long getStats_role() {
+        return stats_role;
+    }
+
+    public void setStats_role(long stats_role) {
+        this.stats_role = stats_role;
     }
 }

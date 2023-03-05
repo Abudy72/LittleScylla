@@ -1,14 +1,18 @@
 package Discord.Interface;
 
 import Discord.Interface.CommandsModule.AcceptCommand;
+import Discord.Interface.CommandsModule.CustomCommandListener;
 import Discord.Interface.CommandsModule.ManualVerificationCommand;
 import Discord.Interface.CommandsModule.SaveMatchStatsCommand;
+import Logic.Dao.LeagueRolesInfoDao;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 
 public class CommandHandler extends ListenerAdapter {
+    private LeagueRolesInfoDao dao = new LeagueRolesInfoDao();
     static final String PLAYER = "player";
     static final String ACCEPT = "accept";
     static final String SAVE = "save";
@@ -26,10 +30,25 @@ public class CommandHandler extends ListenerAdapter {
                 new AcceptCommand().handleCommand(event);
                 break;
             case VERIFY:
-                new ManualVerificationCommand().handleCommand(event);
+                dao.get(event.getGuild().getIdLong()).ifPresent(leagueInfo -> {
+                    if(CustomCommandListener.hasRole(leagueInfo.getStaffRole_uid(),event.getMember())){
+                        new ManualVerificationCommand().handleCommand(event);
+                    }else{
+                        EmbedBuilder builder = new ManualVerificationCommand().generateUnAuthorizedResponse(event.getGuild());
+                        event.replyEmbeds(builder.build()).queue();
+                    }
+                });
                 break;
             case SAVE:
-                new SaveMatchStatsCommand().handleCommand(event);
+                dao.get(event.getGuild().getIdLong()).ifPresent(leagueInfo -> {
+                    if(CustomCommandListener.hasRole(leagueInfo.getStats_role(),event.getMember())){
+                        new SaveMatchStatsCommand().handleCommand(event);
+                    }else{
+                        EmbedBuilder builder = new ManualVerificationCommand().generateUnAuthorizedResponse(event.getGuild());
+                        event.replyEmbeds(builder.build()).queue();
+                    }
+                });
+                break;
         }
     }
 }
