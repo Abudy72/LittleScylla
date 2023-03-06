@@ -19,7 +19,7 @@ public class ConnectionManager {
         ArrayList<String> datasourceInit = new ArrayList<String>();
         datasourceInit.add("SET SCHEMA 'little_monster';");
         dataSource.setConnectionInitSqls(datasourceInit);
-        dataSource.setMaxActive(20);
+        //dataSource.setMaxActive(20);
     }
 
     public static Connection getConnection(){
