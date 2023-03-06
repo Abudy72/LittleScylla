@@ -16,8 +16,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
     @Override
     public Optional<MatchHistoryLog> get(long id) {
         String statement = "SELECT * FROM match_history where matchid = ?";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(statement);
             preparedStatement.setLong(1,id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -36,6 +36,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
             e.getMessage();
             e.printStackTrace();
             throw new RuntimeException();
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return Optional.empty();
     }
@@ -45,8 +47,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
         String statement = "UPDATE match_history " +
                 " SET publicdate = ?, status = ?" +
                 " WHERE matchid = ?";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement p = connection.prepareStatement(statement);
             p.setTimestamp(1,matchObject.getPublicDate());
             p.setBoolean(2,matchObject.isSaved());
@@ -54,6 +56,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
             return p.executeUpdate() == 1;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
     }
 
@@ -61,8 +65,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
     public List<MatchHistoryLog> getAll() {
         String statement = "SELECT * FROM match_history";
         LinkedList<MatchHistoryLog> resultList = new LinkedList<>();
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             ResultSet resultSet = connection.prepareStatement(statement).executeQuery();
             while(resultSet.next()){
                 MatchHistoryLog log = new MatchHistoryLog(
@@ -77,6 +81,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
             }
         }catch (SQLException e){
             throw new RuntimeException(e);
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
         return resultList;
     }
@@ -85,8 +91,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
     public boolean save(MatchHistoryLog matchObject) {
         String statement = "INSERT INTO match_history (matchid,saved_by,publicdate,division,status)" +
                 "VALUES (?,?,?,?,?) on conflict (matchid) do nothing ";
+        Connection connection = ConnectionManager.getConnection();
         try{
-            Connection connection = ConnectionManager.getConnection();
             PreparedStatement p = connection.prepareStatement(statement);
             p.setLong(1,matchObject.getMatchId());
             p.setLong(2,matchObject.getSavedBy());
@@ -98,6 +104,8 @@ public class MatchHistoryDao implements Dao<MatchHistoryLog>  {
             e.getMessage();
             e.printStackTrace();
             throw new UnableToSaveMatchException("Unable to save match id, please make sure the division name is entered correctly");
+        }finally {
+            ConnectionManager.releaseConnection(connection);
         }
     }
 }
