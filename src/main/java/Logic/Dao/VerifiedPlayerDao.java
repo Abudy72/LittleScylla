@@ -121,7 +121,7 @@ public class VerifiedPlayerDao implements Dao<VerifiedPlayer> {
     }
 
     public long getDiscordIdByIGN(String ign){
-        String statement = "SELECT discord_id FROM verified_player where ign = ?";
+        String statement = "SELECT discord_id FROM verified_player where LOWER(ign) = (?)";
         Connection connection = ConnectionManager.getConnection();
         try{
             PreparedStatement preparedStatement = connection.prepareStatement(statement);

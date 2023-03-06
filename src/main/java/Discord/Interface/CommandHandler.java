@@ -1,9 +1,6 @@
 package Discord.Interface;
 
-import Discord.Interface.CommandsModule.AcceptCommand;
-import Discord.Interface.CommandsModule.CustomCommandListener;
-import Discord.Interface.CommandsModule.ManualVerificationCommand;
-import Discord.Interface.CommandsModule.SaveMatchStatsCommand;
+import Discord.Interface.CommandsModule.*;
 import Logic.Dao.LeagueRolesInfoDao;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -13,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CommandHandler extends ListenerAdapter {
     private LeagueRolesInfoDao dao = new LeagueRolesInfoDao();
-    static final String PLAYER = "player";
+    static final String PLAYER_STATS = "player_stats";
     static final String ACCEPT = "accept";
     static final String SAVE = "save";
     static final String MATCHES = "matches";
@@ -49,6 +46,8 @@ public class CommandHandler extends ListenerAdapter {
                     }
                 });
                 break;
+            case PLAYER_STATS:
+                new GetPlayerStats().handleCommand(event);
         }
     }
 }
