@@ -45,13 +45,13 @@ public class PlayerStats{
 
         Field statsPerGame = new Field(
                 "Stats/game",
-                StatsUtil.statsProcessor(stats),
+                StatsUtil.statsProcessor(AverageStatsCalculator.calculateStatsPerGame(stats)),
                 true
         );
 
         Field statsPerMin = new Field(
                 "Stats/minute",
-                StatsUtil.statsProcessor(stats),
+                StatsUtil.statsProcessor(AverageStatsCalculator.calculateStatsPerMin(stats)),
                 true
         );
         builder.addField(totalStats);
