@@ -23,7 +23,7 @@ public class SessionManager extends EndPointBuilder {
     public static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
     private static SessionManager instance;
     private SessionObj currentSession;
-
+    private LocalDateTime sessionExpiration;
     public String getTimeStamp() {
         LocalDateTime datetime = LocalDateTime.now(ZoneId.of("UTC"));
         return datetime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
@@ -52,6 +52,7 @@ public class SessionManager extends EndPointBuilder {
             IController controller = new APIController();
             buildEndPoint();
             HttpResponse response = controller.sendRequest(this);
+            sessionExpiration = LocalDateTime.now().plusMinutes(14).plusSeconds(55);
             String jsonResponse = "";
             try{
                 jsonResponse = EntityUtils.toString(response.getEntity());
@@ -69,7 +70,7 @@ public class SessionManager extends EndPointBuilder {
         if(currentSession == null){
             return false;
         }else{
-            //verify current sessionId
+            /*//verify current sessionId
             IController controller = new APIController();
             HttpResponse response = controller.sendRequest(this);
             int statusCode = response.getStatusLine().getStatusCode();
@@ -84,7 +85,8 @@ public class SessionManager extends EndPointBuilder {
                 return !jsonResponse.contains("Invalid");
             }else {
                 throw new SmiteAPIUnavailableException("Status code: " + statusCode + ", Hi-rez servers unavailable");
-            }
+            }*/
+            return sessionExpiration.isAfter(LocalDateTime.now());
         }
     }
     @Override
