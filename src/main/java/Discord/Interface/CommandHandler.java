@@ -15,7 +15,7 @@ public class CommandHandler extends ListenerAdapter {
     static final String SAVE = "save";
     static final String MATCHES = "matches";
     static final String CHAMP = "gods";
-    static final String DROP_PLAYER = "drop_player";
+    static final String DROP_PLAYER = "drop";
     static final String PLAYERS_INFO="players_info";
     static final String CSV_COMMAND = "match_stats_csv";
     static final String VERIFY = "manual_verification";
@@ -38,7 +38,8 @@ public class CommandHandler extends ListenerAdapter {
                 break;
             case SAVE:
                 dao.get(event.getGuild().getIdLong()).ifPresent(leagueInfo -> {
-                    if(CustomCommandListener.hasRole(leagueInfo.getStats_role(),event.getMember())){
+                    if(CustomCommandListener.hasRole(leagueInfo.getStats_role(),event.getMember())
+                    || CustomCommandListener.hasRole(leagueInfo.getStaffRole_uid(),event.getMember())){
                         new SaveMatchStatsCommand().handleCommand(event);
                     }else{
                         EmbedBuilder builder = new ManualVerificationCommand().generateUnAuthorizedResponse(event.getGuild());
@@ -48,6 +49,18 @@ public class CommandHandler extends ListenerAdapter {
                 break;
             case PLAYER_STATS:
                 new GetPlayerStats().handleCommand(event);
+            case DROP_PLAYER:
+                dao.get(event.getGuild().getIdLong()).ifPresent(leagueInfo -> {
+                    if(CustomCommandListener.hasRole(leagueInfo.getStaffRole_uid(),event.getMember())){
+                        new DropPlayerCommand().handleCommand(event);
+                    }else{
+                        EmbedBuilder builder = new ManualVerificationCommand().generateUnAuthorizedResponse(event.getGuild());
+                        event.replyEmbeds(builder.build()).queue();
+                    }
+                });
+                break;
+            case CSV_COMMAND:
+                new StatsResultGenerator().handleCommand(event);
         }
     }
 }

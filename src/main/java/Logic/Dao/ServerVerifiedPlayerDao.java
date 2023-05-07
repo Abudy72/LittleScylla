@@ -64,4 +64,19 @@ public class ServerVerifiedPlayerDao implements Dao<ServerVerifiedPlayer> {
             ConnectionManager.releaseConnection(connection);
         }
     }
+
+    public boolean delete(long memberId){
+        String statement = "DELETE from server_verification where discord_id = ? AND verified_in = ?";
+        Connection connection = ConnectionManager.getConnection();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(statement);
+            preparedStatement.setLong(1,memberId);
+            preparedStatement.setLong(2,this.guildId);
+            return preparedStatement.executeUpdate() == 1;
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }finally {
+            ConnectionManager.releaseConnection(connection);
+        }
+    }
 }
