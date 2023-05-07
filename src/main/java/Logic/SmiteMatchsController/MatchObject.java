@@ -14,11 +14,17 @@ import Logic.SmiteMatchsController.MatchObjectStates.MatchState;
 import Logic.SmiteMatchsController.MatchObjectStates.MatchUnavailableState;
 import Logic.SmiteMatchsController.PlayerDataModule.MatchPlayerData;
 import Logic.SmiteMatchsController.PlayerDataModule.MatchPublicDateParser;
+import ch.qos.logback.core.encoder.EchoEncoder;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
@@ -109,7 +115,76 @@ public class MatchObject {
         return matchPublicDateParser;
     }
 
+    public void writeMatchDetailsAsCSV(File file){
+        String apiResponse = loadMatchDetails();
+        writeMatchDetailsAsCSV(file, new Gson().fromJson(apiResponse,JsonArray.class));
+    }
+    private void writeMatchDetailsAsCSV(File file, JsonArray json) {
+        try {
+            FileWriter myWriter = new FileWriter(file);
+            myWriter.write("Player,God,Win/Lose,Time,Kills,Deaths,Assists,Gold," +
+                    "Player_Damage,Minion_Damage,Damage_Taken,Damage_Mitigated,Structure_Damage," +
+                    "Healing,Wards,Item1,Item2,Item3,Item4,Item5,Item6,relic_One,relic_Two\n");
+            for (int i = 0; i <= json.size()-1; i++) {
+                JsonObject obj = json.get(i).getAsJsonObject();
+                try{
+                    if(!obj.get("hz_gamer_tag").getAsString().isEmpty()){
+                        myWriter.write(obj.get("hz_gamer_tag").getAsString()+",");
+                    }else{
+                        myWriter.write(obj.get("Reference_Name").getAsString()+",");
+                    }
+                }catch (Exception e){
+                    if(obj.get("hz_player_name").toString() != null){
+                        myWriter.write(obj.get("hz_player_name").getAsString()+",");
+                    }else{
+                        myWriter.write(obj.get("Reference_Name").getAsString()+",");
+                    }
+                }
+                myWriter.write(obj.get("Reference_Name").getAsString()+",");
+                if(obj.get("Win_Status").getAsString().equals("Loser")){
+                    myWriter.write("L,");
+                }else{
+                    myWriter.write("W,");
+                }
+                myWriter.write(obj.get("Match_Duration").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Player").getAsInt()+",");
+                myWriter.write(obj.get("Deaths").getAsInt()+",");
+                myWriter.write(obj.get("Assists").getAsInt()+",");
+                myWriter.write(obj.get("Gold_Earned").getAsInt()+",");
+                myWriter.write(obj.get("Damage_Player").getAsInt()+",");
+                myWriter.write(obj.get("Damage_Bot").getAsInt()+",");
+                myWriter.write(obj.get("Damage_Taken").getAsInt()+",");
+                myWriter.write(obj.get("Damage_Mitigated").getAsInt()+",");
+                myWriter.write(obj.get("Structure_Damage").getAsInt()+",");
+                myWriter.write(obj.get("Healing").getAsInt()+",");
+                myWriter.write(obj.get("Wards_Placed").getAsInt()+",");
+                myWriter.write(obj.get("Wards_Placed").getAsInt()+",");
+                myWriter.write(obj.get("Item_Purch_1").getAsString()+",");
+                myWriter.write(obj.get("Item_Purch_2").getAsString()+",");
+                myWriter.write(obj.get("Item_Purch_3").getAsString()+",");
+                myWriter.write(obj.get("Item_Purch_4").getAsString()+",");
+                myWriter.write(obj.get("Item_Purch_5").getAsString()+",");
+                myWriter.write(obj.get("Item_Purch_6").getAsString()+",");
+                myWriter.write(obj.get("Item_Active_1").getAsString()+",");
+                myWriter.write(obj.get("Item_Active_2").getAsString()+"\n");
+            }
+            myWriter.close();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
-        MatchObject m = new MatchObject(1291409417);
+        MatchObject obj = new MatchObject(1305382129);
+        File file = new File("stats_" + obj.getMatchId() + ".csv");
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+            obj.writeMatchDetailsAsCSV(file);
+        } catch (Exception e) {
+        }
     }
 }

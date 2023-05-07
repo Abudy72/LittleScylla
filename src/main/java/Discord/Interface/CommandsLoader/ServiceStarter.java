@@ -2,6 +2,7 @@ package Discord.Interface.CommandsLoader;
 
 import Discord.Interface.CommandHandler;
 import Discord.Interface.CommandsLoader.CommandsLoader;
+import Discord.Interface.GuildLeaveListener;
 import Logic.ConnectionPooling.Flyway.FlywayMigration;
 import Logic.MatchSaverScheduler;
 import net.dv8tion.jda.api.JDA;
@@ -34,7 +35,7 @@ public class ServiceStarter extends ListenerAdapter {
             // Disable compression (not recommended)
             builder.setCompression(Compression.NONE);
             //builder.setActivity(Activity.playing());
-            builder.addEventListeners(new CommandHandler());
+            builder.addEventListeners(new CommandHandler(), new GuildLeaveListener());
             JDA jda = builder.build().awaitReady();
             jda.updateCommands().addCommands(CommandsLoader.loadCommands()).queue();
         }else{
