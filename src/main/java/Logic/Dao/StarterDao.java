@@ -14,7 +14,7 @@ public class StarterDao {
     }
 
     public static int getActiveServers(){
-        String statement = "select count(distinct(verified_in)) from little_monster.server_verification";
+        String statement = "select count(distinct(verified_in)) from server_verification";
         return getStarterInfo(statement);
     }
 

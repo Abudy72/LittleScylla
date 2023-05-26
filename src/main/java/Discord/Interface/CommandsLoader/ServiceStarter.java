@@ -52,8 +52,7 @@ public class ServiceStarter extends ListenerAdapter {
 
     public static void updateBotStatus(JDA jda){
         int totalPlayers = getVerifiedPlayersCount();
-        int totalServers = getActiveServers();
-        jda.getPresence().setActivity(Activity.competing("Running in : " + totalServers +
-                " and verified " + totalPlayers +" players"));
+        //int totalServers = getActiveServers();
+        jda.getPresence().setActivity(Activity.watching("Players verified " + totalPlayers));
     }
 }
