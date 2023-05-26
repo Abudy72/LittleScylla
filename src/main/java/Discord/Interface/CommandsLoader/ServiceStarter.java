@@ -7,6 +7,7 @@ import Logic.ConnectionPooling.Flyway.FlywayMigration;
 import Logic.MatchSaverScheduler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -18,6 +19,9 @@ import javax.security.auth.login.LoginException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static Logic.Dao.StarterDao.getActiveServers;
+import static Logic.Dao.StarterDao.getVerifiedPlayersCount;
 
 public class ServiceStarter extends ListenerAdapter {
     private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -38,10 +42,18 @@ public class ServiceStarter extends ListenerAdapter {
             builder.addEventListeners(new CommandHandler(), new GuildLeaveListener());
             JDA jda = builder.build().awaitReady();
             jda.updateCommands().addCommands(CommandsLoader.loadCommands()).queue();
+            scheduler.scheduleAtFixedRate(new MatchSaverScheduler(jda),0L, 24L, TimeUnit.HOURS);
         }else{
             System.out.println("Unable to find token");
         }
         //new MatchSaverScheduler().run();
-        scheduler.scheduleAtFixedRate(new MatchSaverScheduler(),0L, 24L, TimeUnit.HOURS);
+
+    }
+
+    public static void updateBotStatus(JDA jda){
+        int totalPlayers = getVerifiedPlayersCount();
+        int totalServers = getActiveServers();
+        jda.getPresence().setActivity(Activity.competing("Running in : " + totalServers +
+                " and verified " + totalPlayers +" players"));
     }
 }

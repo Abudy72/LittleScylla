@@ -7,6 +7,7 @@ import Logic.Dao.Model.MatchHistoryLog;
 import Logic.Exceptions.DivisionOwnershipException;
 import Logic.Exceptions.MatchSavedException;
 import Logic.SmiteMatchsController.MatchObject;
+import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +15,16 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static Discord.Interface.CommandsLoader.ServiceStarter.updateBotStatus;
+
 public class MatchSaverScheduler implements Runnable{
+    JDA jda;
+    public MatchSaverScheduler(JDA jda){
+        this.jda = jda;
+    }
     private static final Logger logger = LoggerFactory.getLogger(MatchSaverScheduler.class);
     @Override
     public void run() {
@@ -41,6 +49,7 @@ public class MatchSaverScheduler implements Runnable{
                 }
             }
         });
+        updateBotStatus(jda);
         logger.info("Service completed: " + matchesSaved + " matches have been saved.");
     }
 
