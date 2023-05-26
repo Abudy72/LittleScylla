@@ -158,7 +158,6 @@ public class MatchObject {
                 myWriter.write(obj.get("Structure_Damage").getAsInt()+",");
                 myWriter.write(obj.get("Healing").getAsInt()+",");
                 myWriter.write(obj.get("Wards_Placed").getAsInt()+",");
-                myWriter.write(obj.get("Wards_Placed").getAsInt()+",");
                 myWriter.write(obj.get("Item_Purch_1").getAsString()+",");
                 myWriter.write(obj.get("Item_Purch_2").getAsString()+",");
                 myWriter.write(obj.get("Item_Purch_3").getAsString()+",");
