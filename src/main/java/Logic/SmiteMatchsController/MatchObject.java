@@ -126,7 +126,8 @@ public class MatchObject {
                     "Player_Damage,Minion_Damage,Damage_Taken,Damage_Mitigated,Structure_Damage," +
                     "Healing,Wards,Damage_Taken_Magical,Damage_Taken_Physical,Gold_Per_Minute,Healing,Killing_Spree,Kills_Bot,Kills_Double,Kills_Fire_Giant,Kills_First_Blood," +
                     "Kills_Gold_Fury,Kills_Penta,Kills_Phoenix,Kills_Quadra,Kills_Single,Kills_Triple," +
-                    "Item1,Item2,Item3,Item4,Item5,Item6,relic_One,relic_Two\n");
+                    "Item1,Item2,Item3,Item4,Item5,Item6,Ban1,Ban2,Ban3,Ban4,Ban5,Pick," +
+                    "relic_One,relic_Two\n");
             for (int i = 0; i <= json.size()-1; i++) {
                 JsonObject obj = json.get(i).getAsJsonObject();
                 try{
@@ -182,6 +183,15 @@ public class MatchObject {
                 myWriter.write(obj.get("Item_Purch_4").getAsString()+",");
                 myWriter.write(obj.get("Item_Purch_5").getAsString()+",");
                 myWriter.write(obj.get("Item_Purch_6").getAsString()+",");
+
+                myWriter.write(obj.get("Ban1").getAsString()+",");
+                myWriter.write(obj.get("Ban2").getAsString()+",");
+                myWriter.write(obj.get("Ban3").getAsString()+",");
+                myWriter.write(obj.get("Ban4").getAsString()+",");
+                myWriter.write(obj.get("Ban5").getAsString()+",");
+
+                myWriter.write(obj.get("Reference_Name").getAsString()+",");
+
                 myWriter.write(obj.get("Item_Active_1").getAsString()+",");
                 myWriter.write(obj.get("Item_Active_2").getAsString()+"\n");
             }
@@ -192,7 +202,7 @@ public class MatchObject {
     }
 
     public static void main(String[] args) {
-        MatchObject obj = new MatchObject(1319741598);
+        MatchObject obj = new MatchObject(1316052170);
         File file = new File("stats_" + obj.getMatchId() + ".csv");
         try {
             if (file.createNewFile()) {
