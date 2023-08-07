@@ -124,7 +124,9 @@ public class MatchObject {
             FileWriter myWriter = new FileWriter(file);
             myWriter.write("Player,God,Win/Lose,Time,Kills,Deaths,Assists,Gold," +
                     "Player_Damage,Minion_Damage,Damage_Taken,Damage_Mitigated,Structure_Damage," +
-                    "Healing,Wards,Item1,Item2,Item3,Item4,Item5,Item6,relic_One,relic_Two\n");
+                    "Healing,Wards,Damage_Taken_Magical,Damage_Taken_Physical,Gold_Per_Minute,Healing,Killing_Spree,Kills_Bot,Kills_Double,Kills_Fire_Giant,Kills_First_Blood," +
+                    "Kills_Gold_Fury,Kills_Penta,Kills_Phoenix,Kills_Quadra,Kills_Single,Kills_Triple," +
+                    "Item1,Item2,Item3,Item4,Item5,Item6,relic_One,relic_Two\n");
             for (int i = 0; i <= json.size()-1; i++) {
                 JsonObject obj = json.get(i).getAsJsonObject();
                 try{
@@ -158,6 +160,22 @@ public class MatchObject {
                 myWriter.write(obj.get("Structure_Damage").getAsInt()+",");
                 myWriter.write(obj.get("Healing").getAsInt()+",");
                 myWriter.write(obj.get("Wards_Placed").getAsInt()+",");
+                myWriter.write(obj.get("Damage_Taken_Magical").getAsInt()+",");
+                myWriter.write(obj.get("Damage_Taken_Physical").getAsInt()+",");
+                myWriter.write(obj.get("Gold_Per_Minute").getAsInt()+",");
+                myWriter.write(obj.get("Healing").getAsInt()+",");
+                myWriter.write(obj.get("Killing_Spree").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Bot").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Double").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Fire_Giant").getAsInt()+",");
+                myWriter.write(obj.get("Kills_First_Blood").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Gold_Fury").getAsInt()+",");
+
+                myWriter.write(obj.get("Kills_Penta").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Phoenix").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Quadra").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Single").getAsInt()+",");
+                myWriter.write(obj.get("Kills_Triple").getAsInt()+",");
                 myWriter.write(obj.get("Item_Purch_1").getAsString()+",");
                 myWriter.write(obj.get("Item_Purch_2").getAsString()+",");
                 myWriter.write(obj.get("Item_Purch_3").getAsString()+",");
@@ -174,7 +192,7 @@ public class MatchObject {
     }
 
     public static void main(String[] args) {
-        MatchObject obj = new MatchObject(1305382129);
+        MatchObject obj = new MatchObject(1319741598);
         File file = new File("stats_" + obj.getMatchId() + ".csv");
         try {
             if (file.createNewFile()) {
