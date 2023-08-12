@@ -120,13 +120,14 @@ public class MatchObject {
         writeMatchDetailsAsCSV(file, new Gson().fromJson(apiResponse,JsonArray.class));
     }
     private void writeMatchDetailsAsCSV(File file, JsonArray json) {
+        String time = json.get(0).getAsJsonObject().get("Entry_Datetime").getAsString();
         try {
             FileWriter myWriter = new FileWriter(file);
             myWriter.write("Player,God,Win/Lose,Time,Kills,Deaths,Assists,Gold," +
                     "Player_Damage,Minion_Damage,Damage_Taken,Damage_Mitigated,Structure_Damage," +
                     "Healing,Wards,Damage_Taken_Magical,Damage_Taken_Physical,Gold_Per_Minute,Healing,Killing_Spree,Kills_Bot,Kills_Double,Kills_Fire_Giant,Kills_First_Blood," +
                     "Kills_Gold_Fury,Kills_Penta,Kills_Phoenix,Kills_Quadra,Kills_Single,Kills_Triple," +
-                    "Item1,Item2,Item3,Item4,Item5,Item6,Ban1,Ban2,Ban3,Ban4,Ban5,Pick," +
+                    "Item1,Item2,Item3,Item4,Item5,Item6,Ban1,Ban2,Ban3,Ban4,Ban5,Ban6,Ban7,Ban8,Ban9,Ban10,Pick," +
                     "relic_One,relic_Two\n");
             for (int i = 0; i <= json.size()-1; i++) {
                 JsonObject obj = json.get(i).getAsJsonObject();
@@ -190,11 +191,18 @@ public class MatchObject {
                 myWriter.write(obj.get("Ban4").getAsString()+",");
                 myWriter.write(obj.get("Ban5").getAsString()+",");
 
+                myWriter.write(obj.get("Ban6").getAsString()+",");
+                myWriter.write(obj.get("Ban7").getAsString()+",");
+                myWriter.write(obj.get("Ban8").getAsString()+",");
+                myWriter.write(obj.get("Ban9").getAsString()+",");
+                myWriter.write(obj.get("Ban10").getAsString()+",");
+
                 myWriter.write(obj.get("Reference_Name").getAsString()+",");
 
                 myWriter.write(obj.get("Item_Active_1").getAsString()+",");
                 myWriter.write(obj.get("Item_Active_2").getAsString()+"\n");
             }
+            myWriter.write(time);
             myWriter.close();
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -202,7 +210,7 @@ public class MatchObject {
     }
 
     public static void main(String[] args) {
-        MatchObject obj = new MatchObject(1316052170);
+        MatchObject obj = new MatchObject(1316081029);
         File file = new File("stats_" + obj.getMatchId() + ".csv");
         try {
             if (file.createNewFile()) {
